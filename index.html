@@ -1,0 +1,1770 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#131B29">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Provvigioni">
+<meta name="format-detection" content="telephone=no">
+<title>Registro provvigioni</title>
+<style>
+:root{
+  --bg:#131B29; --surface:#1A2436; --raised:#22304A; --line:#2C3B57; --line-soft:#223049;
+  --ink:#EFE9DC; --ink2:#AEB6C4; --ink3:#7F899C;
+  --gold:#D1B06E; --gold-ink:#1D1606; --gold-soft:rgba(209,176,110,.13); --gold-dim:#6E5D3C;
+  --silver:#C3CCD7; --silver-soft:rgba(195,204,215,.10);
+  --pos:#8FC7A6; --neg:#E59C95; --warn:#E8C47C;
+  --serif:ui-serif,"New York","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
+button{font-family:inherit;cursor:pointer;-webkit-appearance:none;appearance:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.num,.fig{font-variant-numeric:tabular-nums lining-nums}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.top-in{max-width:600px;margin:0 auto;padding:12px 16px 10px;display:flex;align-items:center;gap:12px;min-height:58px}
+.top-in.bar{justify-content:space-between}
+.top h1{font:600 22px/1.15 var(--serif);margin:0;letter-spacing:.005em}
+.top .sub{color:var(--ink3);font-size:14px}
+.bar-title{font-weight:600;font-size:17px}
+.wrap{max-width:600px;margin:0 auto;padding:4px 16px calc(112px + env(safe-area-inset-bottom,0px))}
+.wrap.form{padding-bottom:calc(210px + env(safe-area-inset-bottom,0px))}
+
+/* hallmark-style atto number */
+.punch{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 9px;border:1.5px solid var(--gold);border-radius:7px;outline:1px solid rgba(209,176,110,.3);outline-offset:2px;font:600 17px/1 var(--serif);color:var(--gold);font-variant-numeric:tabular-nums lining-nums;flex:none;white-space:nowrap}
+.punch.sm{min-width:46px;height:28px;font-size:15px}
+.punch.lg{min-width:84px;height:48px;font-size:26px;border-width:2px;outline-offset:3px;border-radius:9px}
+.punch.xl{min-width:96px;height:64px;font-size:30px;border-width:2px;outline-offset:4px;border-radius:11px}
+.punch.ghost{border-color:var(--ink3);color:var(--ink3);outline-color:rgba(127,137,156,.3)}
+
+/* buttons */
+.btn{border:0;border-radius:12px;min-height:50px;padding:0 18px;font:600 17px/1.1 var(--sans);display:inline-flex;align-items:center;justify-content:center;gap:8px;color:var(--ink);background:var(--raised);width:100%;text-align:center;text-decoration:none}
+.btn.primary{background:var(--gold);color:var(--gold-ink)}
+.btn.primary:active{filter:brightness(.92)}
+.btn.big{min-height:58px;font-size:18px;border-radius:14px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.danger{background:transparent;border:1px solid rgba(229,156,149,.45);color:var(--neg)}
+.btn.small{min-height:40px;font-size:15px;padding:0 14px;width:auto}
+.btn svg{width:20px;height:20px}
+.link{background:none;border:0;color:var(--gold);font:500 16px/1 var(--sans);padding:10px 4px;display:inline-flex;align-items:center;gap:4px}
+.link svg{width:20px;height:20px}
+.link.danger{color:var(--neg)}
+.link.muted{color:var(--ink2)}
+.file{position:relative;overflow:hidden}
+.file input{position:absolute;inset:0;opacity:0;width:100%;height:100%;min-height:0;padding:0;border:0;cursor:pointer}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.stack>*+*{margin-top:10px}
+
+/* forms */
+input,select,textarea{font:16px/1.3 var(--sans);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;width:100%;min-height:48px;-webkit-appearance:none;appearance:none;margin:0}
+input[type=date],input[type=time],input[type=month]{display:block;min-width:0}
+select{padding-right:36px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23AEB6C4' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+textarea{resize:vertical;min-height:84px}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none;box-shadow:0 0 0 3px var(--gold-soft)}
+input::placeholder,textarea::placeholder{color:var(--ink3)}
+.fld{display:block;margin:12px 0 0}
+.fld>span{display:block;font-size:14px;color:var(--ink2);margin-bottom:6px}
+.fld small{color:var(--ink3)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.hint{color:var(--ink3);font-size:13.5px;margin:8px 0 0}
+.err-box{border:1px solid rgba(229,156,149,.5);background:rgba(229,156,149,.08);color:var(--neg);border-radius:12px;padding:12px 14px;margin:18px 0 0;font-size:15px}
+.err-box ul{margin:6px 0 0;padding-left:18px}
+.fsec{padding:18px 0 20px;border-bottom:1px solid var(--line-soft)}
+.fsec h2,.sec h2{font:600 19px/1.2 var(--serif);margin:0 0 4px;color:var(--ink)}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px;margin-top:10px}
+.seg button{flex:1;min-height:44px;border:0;border-radius:9px;background:transparent;color:var(--ink2);font:500 15px/1.1 var(--sans);padding:0 6px}
+.seg button.on{background:var(--raised);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.seg.sm button{min-height:38px;font-size:14px}
+.mode-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+.mode-row>span{color:var(--ink2);font-size:15px}
+.mode-row .seg{margin:0;flex:0 0 230px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:transparent;color:var(--ink2);font:500 15px/1 var(--sans)}
+.chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-soft)}
+.chips.tight{gap:6px}.chips.tight .chip{min-height:34px;padding:0 11px;font-size:14px;border-radius:17px}
+.riga.argento .chip.on{border-color:var(--silver);color:var(--silver);background:var(--silver-soft)}
+.chip .x{margin-left:6px;opacity:.7}
+.riga{margin-top:16px;padding:14px 14px 16px;border-radius:14px;background:var(--surface);border:1px solid var(--line-soft);border-left:3px solid var(--gold)}
+.riga.argento{border-left-color:var(--silver)}
+.riga-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.riga-head h3{margin:0;font:600 16px/1.2 var(--sans)}
+.add-row{display:grid;gap:10px;margin-top:14px}
+
+/* save bar */
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(19,27,41,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.savebar-in{max-width:600px;margin:0 auto;padding:10px 16px 12px}
+.sumgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:10px}
+.sumgrid div{min-width:0}
+.sumgrid span{display:block;font-size:11.5px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sumgrid b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.sumgrid .provv b{color:var(--gold)}
+.sumnote{font-size:12.5px;color:var(--ink3);margin:-4px 0 8px}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(19,27,41,.93);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav-in{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:0;color:var(--ink3);font:500 11.5px/1 var(--sans)}
+.nav button.on{color:var(--gold)}
+.nav svg{width:24px;height:24px}
+
+/* home */
+.hero{padding:14px 0 22px}
+.hero-label{color:var(--ink2);font-size:15px}
+.hero-fig{font:500 clamp(46px,14vw,66px)/1.04 var(--serif);color:var(--gold);letter-spacing:-.015em;margin:6px 0 10px;font-variant-numeric:tabular-nums lining-nums;word-break:break-word}
+.hero-fig.off{color:var(--gold-dim)}
+.hero-note{color:var(--ink3);font-size:14px;max-width:46ch}
+.hero-note .link{padding:4px 0;font-size:14px}
+.stat3{display:grid;grid-template-columns:1.25fr 1.25fr .7fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:18px}
+.stat3>div{padding:14px 10px 14px 0;min-width:0}
+.stat3>div+div{padding-left:12px;border-left:1px solid var(--line-soft)}
+.stat3 span{display:block;font-size:12.5px;color:var(--ink3);line-height:1.25}
+.stat3 b{display:block;font:500 20px/1.2 var(--serif);margin-top:5px;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec{margin-top:28px}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
+.sec-head .sub{color:var(--ink3);font-size:14px}
+.four{list-style:none;margin:0;padding:0}
+.four li{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.four li:last-child{border-bottom:0}
+.four .lbl{font-size:15px;line-height:1.25}
+.four .lbl small{display:block;color:var(--ink3);font-size:12.5px;margin-top:2px}
+.four .val{font:500 19px/1.2 var(--serif);font-variant-numeric:tabular-nums lining-nums;text-align:right;white-space:nowrap}
+.four li.key .val{color:var(--gold)}
+.mk{width:11px;height:11px;display:inline-block}
+.mk.mat{border:1.6px solid var(--gold);border-radius:50%}
+.mk.ric{border:1.6px solid var(--ink2);border-radius:2px;background:linear-gradient(90deg,var(--ink2) 50%,transparent 50%)}
+.mk.sti{background:var(--gold);border-radius:50%}
+.mk.inc{background:var(--pos);border-radius:2px}
+.mk.utl{border-top:2px solid var(--ink2);height:0;width:12px}
+.panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:16px;padding:6px 16px}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink3);font-size:13px;margin:4px 0 10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.backup-line{margin-top:22px;padding:12px 14px;border-radius:12px;font-size:14px;color:var(--ink2);border:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.backup-line.warn{border-color:rgba(232,196,124,.45);color:var(--warn)}
+.backup-line .link{padding:4px 0;font-size:14px;white-space:nowrap}
+
+/* archive */
+.filters{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;padding:4px 14px 14px;margin-bottom:6px}
+.fbar{display:flex;gap:10px;align-items:center}
+.fbar input{flex:1}
+.asum{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--ink3);font-size:13.5px;padding:10px 0 4px}
+.asum b{color:var(--ink2);font-weight:600}
+.alist{list-style:none;margin:0;padding:0}
+.arow{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:start;padding:14px 0;border:0;border-bottom:1px solid var(--line-soft);width:100%;text-align:left;background:none;color:inherit;font:inherit}
+.arow .meta{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.arow .when{font-size:14px;color:var(--ink2)}
+.tag{font-size:12.5px;padding:3px 8px;border-radius:6px;border:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+.tag.oro{border-color:rgba(209,176,110,.5);color:var(--gold)}
+.tag.argento{border-color:rgba(195,204,215,.45);color:var(--silver)}
+.tag.misto{border-color:var(--line);color:var(--ink)}
+.figs{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;font-size:13.5px;margin-top:6px;color:var(--ink3)}
+.figs b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;float:right}
+.figs .fprov b{color:var(--gold)}
+.pos{color:var(--pos)!important}.neg{color:var(--neg)!important}
+.empty{padding:40px 8px;text-align:center;color:var(--ink3)}
+.empty p{margin:0 0 16px}
+
+/* detail */
+.dhead{display:flex;gap:18px;align-items:center;padding:12px 0 18px}
+.dhead .d1{font-size:17px;font-weight:600}
+.dhead .d2{color:var(--ink2);font-size:15px;margin-top:2px}
+.econ{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.econ>div{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line-soft);gap:12px}
+.econ>div:last-child{border-bottom:0}
+.econ span{color:var(--ink2);font-size:15px}
+.econ b{font:500 19px/1.2 var(--serif);font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.econ .key b{color:var(--gold);font-size:22px}
+.econ .soft b{color:var(--ink2);font-size:17px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:10px 0 0;font-size:15px}
+.kv dt{color:var(--ink3)}
+.kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.dr{padding:14px 0;border-bottom:1px solid var(--line-soft)}
+.dr:last-child{border-bottom:0}
+.dr-h{display:flex;align-items:center;gap:8px;font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--gold);flex:none}
+.dot.argento{background:var(--silver)}
+.dr .tips{color:var(--ink2);font-weight:400;font-size:14px}
+.note-box{white-space:pre-wrap;color:var(--ink2);font-size:15px;margin-top:8px}
+.hist{list-style:none;padding:0;margin:8px 0 0;font-size:14px;color:var(--ink2)}
+.hist li{padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.hist time{display:block;color:var(--ink3);font-size:12.5px;margin-bottom:2px}
+.notice{border:1px solid rgba(232,196,124,.45);color:var(--warn);border-radius:12px;padding:12px 14px;margin:6px 0 14px;font-size:15px}
+
+/* photos */
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.thumbs:empty{display:none}
+.thumb{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:var(--raised);border:0;padding:0;display:block}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .x{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:14px;background:rgba(10,14,22,.72);color:#fff;border:0;font-size:18px;line-height:28px;padding:0}
+.pv{position:fixed;inset:0;z-index:120;background:#05070B;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.pv-top{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;color:var(--ink2)}
+.pv-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;touch-action:pan-y}
+.pv-img img{max-width:100%;max-height:100%;object-fit:contain}
+.pv-bot{display:flex;justify-content:space-between;padding:10px 14px}
+
+/* reports */
+.pager{display:flex;align-items:center;justify-content:space-between;margin:6px 0 4px}
+.pager .pg{width:48px;height:44px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:22px}
+.pager .pg-title{font:600 20px/1.2 var(--serif);text-align:center}
+.pager .pg-title small{display:block;font:400 13px var(--sans);color:var(--ink3);margin-top:2px}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.q{background:var(--surface);border:1px solid var(--line-soft);border-radius:14px;padding:12px 13px 13px;min-width:0}
+.q .ql{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink2);line-height:1.2}
+.q .qv{font:500 22px/1.2 var(--serif);margin-top:8px;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q .qs{font-size:12px;color:var(--ink3);margin-top:4px;line-height:1.3}
+.q.key{border-color:rgba(209,176,110,.45)}
+.q.key .qv{color:var(--gold)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px -16px 0;padding:0 16px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+table.t.wide{min-width:560px}
+.t th,.t td{padding:10px 8px;border-bottom:1px solid var(--line-soft);text-align:right;white-space:nowrap}
+.t th{color:var(--ink3);font-weight:500;font-size:12.5px}
+.t th:first-child,.t td:first-child{text-align:left;padding-left:0}
+.t tr.tot td{font-weight:600;border-top:1px solid var(--line);border-bottom:0}
+.t tr.clickable{cursor:pointer}
+.t tr.cur td:first-child{color:var(--gold)}
+.recon{margin-top:10px}
+.recon .rb{padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.recon .rb h4{margin:0 0 6px;font-size:15px}
+.recon .rl{display:flex;justify-content:space-between;font-size:14.5px;color:var(--ink2);padding:2px 0}
+.recon .rl b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.setup{border:1px solid rgba(209,176,110,.5);background:var(--gold-soft);border-radius:14px;padding:14px;margin-top:12px}
+.setup h3{margin:0;font:600 17px/1.25 var(--serif);color:var(--gold)}
+.setup p{margin:6px 0 0;font-size:14px;color:var(--ink2)}
+.preview{margin-top:10px;font-size:14px;color:var(--ink)}
+.delta{font-size:13.5px;color:var(--ink2);display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin-top:8px}
+.delta b{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+
+/* settings */
+.srow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+.srow .sl{font-size:15.5px}
+.srow .sl small{display:block;color:var(--ink3);font-size:13px;margin-top:2px}
+.srow .sv{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.info{font-size:14px;color:var(--ink2)}
+.info p{margin:8px 0}
+
+/* onboarding */
+.onb{max-width:460px;margin:0 auto;padding:12vh 22px 40px}
+.onb h1{font:600 30px/1.15 var(--serif);margin:26px 0 8px}
+.onb p.lead{color:var(--ink2);font-size:17px;margin:0 0 6px}
+.onb .btn{margin-top:22px}
+
+/* modal + toast */
+.ov{position:fixed;inset:0;z-index:100;background:rgba(5,8,14,.62);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto;border:1px solid var(--line);border-bottom:0}
+.sh-title{font:600 20px/1.25 var(--serif);margin:0 0 6px}
+.sh-body{color:var(--ink2);font-size:15px}
+.sh-body p{margin:8px 0}
+.sh-actions{display:grid;gap:10px;margin-top:18px}
+.sh-err{color:var(--neg);font-size:14px;margin-top:10px}
+@media (min-width:640px){.ov{align-items:center}.sheet{border-radius:18px;border-bottom:1px solid var(--line);padding-bottom:20px}}
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:200;background:var(--raised);color:var(--ink);border:1px solid var(--line);padding:11px 16px;border-radius:12px;font-size:15px;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.35);transition:opacity .2s}
+.toast[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+@media print{
+  :root{--bg:#fff;--surface:#fff;--raised:#fff;--ink:#000;--ink2:#333;--ink3:#555;--line:#bbb;--line-soft:#ddd;--gold:#7a5a14;padding:0}
+  body{background:#fff;color:#000}
+  body::before,.nav,.savebar,.noprint,.top .link,.pager .pg{display:none!important}
+  .top{position:static}
+  .wrap{padding-bottom:0}
+  .q,.panel{border-color:#bbb}
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="empty" style="padding-top:30vh">Caricamento…</div></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<noscript><p style="padding:24px">Per usare il registro serve JavaScript attivo.</p></noscript>
+<script>
+'use strict';
+/*CORE-START*/
+const Core = (() => {
+  const CARATURE = ['24','22','21.6','18','14','10','9'];
+  const MESI = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+  const MESI_BREVI = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+  const round3 = n => Math.round(n * 1000) / 1000;
+
+  // ---- parsing (accetta 1.234,56 · 1234,56 · 1234.56) ----
+  function norm(v, money) {
+    if (v === null || v === undefined) return null;
+    let s = String(v).trim().replace(/[\s\u00a0€]/g, '');
+    if (s === '') return null;
+    let neg = false;
+    if (s[0] === '-' || s[0] === '\u2212') { neg = true; s = s.slice(1); }
+    if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+    else {
+      const dots = (s.match(/\./g) || []).length;
+      if (dots > 1) s = s.replace(/\./g, '');
+      else if (dots === 1 && money && /^\d{1,3}\.\d{3}$/.test(s)) s = s.replace('.', '');
+    }
+    if (!/^(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+    return { neg, s };
+  }
+  function toCents(v) {
+    const r = norm(v, true);
+    if (r === null) return null;
+    if (r !== r) return NaN;
+    const [i, d = ''] = r.s.split('.');
+    let c = parseInt(i || '0', 10) * 100 + parseInt((d + '00').slice(0, 2), 10);
+    if (d.length > 2 && d.charCodeAt(2) >= 53) c += 1;
+    return r.neg ? -c : c;
+  }
+  function parseGrams(v) {
+    const r = norm(v, false);
+    if (r === null) return null;
+    if (r !== r || r.neg) return NaN;
+    return round3(parseFloat(r.s));
+  }
+  function parseDec(v) {
+    const r = norm(v, false);
+    if (r === null) return null;
+    if (r !== r) return NaN;
+    const n = parseFloat(r.s);
+    return r.neg ? -n : n;
+  }
+  function parseIntStrict(v) {
+    const s = String(v == null ? '' : v).trim();
+    return /^\d+$/.test(s) ? parseInt(s, 10) : NaN;
+  }
+
+  // ---- formattazione italiana ----
+  const groupInt = s => String(s).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  function fmtEur(c) {
+    if (c == null || c !== c) return '—';
+    const neg = c < 0, a = Math.abs(Math.round(c));
+    return (neg ? '\u2212' : '') + groupInt(Math.floor(a / 100)) + ',' + String(a % 100).padStart(2, '0') + '\u00a0€';
+  }
+  function fmtEurSigned(c) { if (c == null || c !== c) return '—'; return (c > 0 ? '+' : '') + fmtEur(c); }
+  function centsPlain(c) {
+    if (c == null || c !== c) return '';
+    const neg = c < 0, a = Math.abs(c);
+    return (neg ? '-' : '') + Math.floor(a / 100) + ',' + String(a % 100).padStart(2, '0');
+  }
+  function fmtNum(n, dec = 3, fixed = false) {
+    if (n == null || n !== n) return '—';
+    const neg = n < 0;
+    let [i, d = ''] = Math.abs(n).toFixed(dec).split('.');
+    if (!fixed) d = d.replace(/0+$/, '');
+    return (neg ? '\u2212' : '') + groupInt(i) + (d ? ',' + d : '');
+  }
+  const fmtG = n => (n == null || n !== n) ? '—' : fmtNum(n, 3) + '\u00a0g';
+  const fmtPct = (p, dec = 2) => (p == null || p !== p) ? '—' : fmtNum(p, dec, true) + '\u00a0%';
+  const fmtPctSigned = (p, dec = 2) => (p == null || p !== p) ? 'n/d' : (p > 0 ? '+' : '') + fmtPct(p, dec);
+  const gPlain = n => (n == null || n !== n) ? '' : String(round3(n)).replace('.', ',');
+  const caratLabel = c => String(c).replace('.', ',') + '\u00a0kt';
+  const titoloLabel = t => { t = String(t == null ? '' : t); return /^\d+$/.test(t) ? t + '\u00a0‰' : t; };
+  const rateLabel = r => fmtNum(r, 2) + '\u00a0%';
+
+  // ---- date (Europe/Rome) ----
+  const RF = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Rome', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  function romeParts(d) {
+    const p = {};
+    for (const x of RF.formatToParts(d || new Date())) p[x.type] = x.value;
+    return { date: `${p.year}-${p.month}-${p.day}`, time: `${p.hour === '24' ? '00' : p.hour}:${p.minute}` };
+  }
+  function dateIt(d) { if (!d) return ''; const [y, m, dd] = d.split('-'); return `${dd}/${m}/${y}`; }
+  function isoIt(iso) { if (!iso) return ''; const r = romeParts(new Date(iso)); return dateIt(r.date) + ' ' + r.time; }
+  function addMonths(ym, k) {
+    let [y, m] = ym.split('-').map(Number); m += k;
+    while (m < 1) { m += 12; y--; } while (m > 12) { m -= 12; y++; }
+    return y + '-' + String(m).padStart(2, '0');
+  }
+  function monthLabel(ym) { const [y, m] = ym.split('-'); const s = MESI[+m - 1]; return s[0].toUpperCase() + s.slice(1) + ' ' + y; }
+  function monthName(m) { const s = MESI[+m - 1]; return s[0].toUpperCase() + s.slice(1); }
+
+  // ---- calcolo economico ----
+  const sum = arr => arr.reduce((s, x) => s + (x || 0), 0);
+  // provvigione = MAX(0, utile) × percentuale
+  function provvOf(utile, ratePct) { return utile > 0 ? Math.round(utile * ratePct / 100) : 0; }
+  function calcAtto(a) {
+    const righe = a.righe || [];
+    const valmax = a.valmaxMode === 'atto' ? (a.valmaxAtto || 0) : sum(righe.map(r => r.valmax));
+    const prezzo = a.prezzoMode === 'atto' ? (a.prezzoAtto || 0) : sum(righe.map(r => r.prezzo));
+    const utile = valmax - prezzo;
+    const provv = provvOf(utile, a.ratePct);
+    const metals = [...new Set(righe.map(r => r.metal))];
+    const kind = metals.length > 1 ? 'misto' : (metals[0] || 'oro');
+    return { valmax, prezzo, utile, provv, kind, metals };
+  }
+  function metalSummary(a) {
+    const car = [...new Set(a.righe.filter(r => r.metal === 'oro').map(r => r.caratura))].sort((x, y) => parseFloat(y) - parseFloat(x));
+    const tit = [...new Set(a.righe.filter(r => r.metal === 'argento').map(r => r.titolo))];
+    const parts = [];
+    if (car.length) parts.push('Oro ' + car.map(caratLabel).join(', '));
+    if (tit.length) parts.push('Argento ' + tit.map(titoloLabel).join(', '));
+    return parts.join(' + ');
+  }
+
+  // ---- coefficiente netto effettivo di riferimento ----
+  function coefFromPair(gross, net) {
+    if (gross == null || gross !== gross || !Number.isInteger(gross) || gross <= 0)
+      return { ok: false, error: 'Inserisci una provvigione lorda maggiore di zero: senza un lordo valido il coefficiente non si può calcolare.' };
+    if (net == null || net !== net || net < 0)
+      return { ok: false, error: 'Inserisci la provvigione netta ricevuta (zero o maggiore).' };
+    const ratio = net / gross;
+    return { ok: true, num: net, den: gross, ratio, pct: ratio * 100, trattenuta: (1 - ratio) * 100, netOverGross: net > gross };
+  }
+  function coefFromPct(p) {
+    if (p == null || p !== p || p <= 0 || p > 100) return { ok: false, error: 'Inserisci una percentuale maggiore di 0 e non superiore a 100.' };
+    const num = Math.round(p * 100);
+    return { ok: true, num, den: 10000, ratio: num / 10000, pct: num / 100, trattenuta: 100 - num / 100 };
+  }
+  function coefForMonth(hist, ym) {
+    if (!hist || !hist.length) return null;
+    const s = [...hist].sort((a, b) => a.from < b.from ? -1 : a.from > b.from ? 1 : (a.savedAt < b.savedAt ? -1 : 1));
+    let c = s[0];
+    for (const h of s) if (h.from <= ym) c = h;
+    return c;
+  }
+  const netOf = (gross, coef) => coef ? Math.round(gross * coef.num / coef.den) : null;
+  const coefPct = coef => coef ? coef.num / coef.den * 100 : null;
+
+  // ---- aggregazioni ----
+  const activeAtti = atti => atti.filter(a => !a.deletedAt);
+  const emptyAgg = () => ({ n: 0, valmax: 0, prezzo: 0, utile: 0, provv: 0 });
+  function addAgg(t, c) { t.n += (c.n == null ? 1 : c.n); t.valmax += c.valmax; t.prezzo += c.prezzo; t.utile += c.utile; t.provv += c.provv; }
+  function gramsAddRow(g, r) {
+    const key = r.metal === 'oro' ? String(r.caratura) : String(r.titolo || '—');
+    const m = g[r.metal];
+    const e = m[key] || (m[key] = { peso: 0, quantita: 0, conQuantita: 0, righe: 0 });
+    e.peso = round3(e.peso + (r.peso || 0));
+    if (r.quantita != null) { e.quantita = round3(e.quantita + r.quantita); e.conQuantita++; }
+    e.righe++;
+  }
+  function gramsMerge(dst, src) {
+    for (const metal of ['oro', 'argento']) for (const k in src[metal]) {
+      const s = src[metal][k];
+      const e = dst[metal][k] || (dst[metal][k] = { peso: 0, quantita: 0, conQuantita: 0, righe: 0 });
+      e.peso = round3(e.peso + s.peso); e.quantita = round3(e.quantita + s.quantita);
+      e.conQuantita += s.conQuantita; e.righe += s.righe;
+    }
+  }
+  function gramsTotals(g) {
+    const out = {};
+    for (const metal of ['oro', 'argento']) {
+      let peso = 0, quantita = 0, conQuantita = 0;
+      for (const k in g[metal]) { peso += g[metal][k].peso; quantita += g[metal][k].quantita; conQuantita += g[metal][k].conQuantita; }
+      out[metal] = { peso: round3(peso), quantita: round3(quantita), conQuantita };
+    }
+    return out;
+  }
+  function reconcile(tot, cl, ratePct, netStim) {
+    const r = {};
+    if (!cl) return r;
+    if (cl.aziendaUtile != null) {
+      r.dUtile = cl.aziendaUtile - tot.utile;
+      r.pUtile = tot.utile !== 0 ? r.dUtile / Math.abs(tot.utile) * 100 : null;
+      r.attesoDaAzienda = provvOf(cl.aziendaUtile, ratePct);
+    }
+    if (cl.aziendaProvv != null) {
+      r.dProvv = cl.aziendaProvv - tot.provv;
+      r.pProvv = tot.provv !== 0 ? r.dProvv / tot.provv * 100 : null;
+      if (r.attesoDaAzienda != null) r.dAtteso = cl.aziendaProvv - r.attesoDaAzienda;
+    }
+    if (cl.nettoIncassato != null && netStim != null) {
+      r.dNetto = cl.nettoIncassato - netStim;
+      r.pNetto = netStim !== 0 ? r.dNetto / netStim * 100 : null;
+    }
+    return r;
+  }
+  function monthReport(atti, ym, settings, closings) {
+    const list = activeAtti(atti).filter(a => a.date.slice(0, 7) === ym).sort((a, b) => a.number - b.number);
+    const tot = emptyAgg(), groups = { oro: emptyAgg(), argento: emptyAgg(), misto: emptyAgg() }, grams = { oro: {}, argento: {} };
+    for (const a of list) {
+      const c = calcAtto(a);
+      addAgg(tot, c); addAgg(groups[c.kind], c);
+      for (const r of a.righe) gramsAddRow(grams, r);
+    }
+    const coef = coefForMonth(settings.coefHistory || [], ym);
+    const netStim = coef ? netOf(tot.provv, coef) : null;
+    const closing = (closings && closings[ym]) || null;
+    return { ym, list, tot, groups, grams, gramsTot: gramsTotals(grams), coef, netStim, closing, recon: reconcile(tot, closing, settings.ratePct, netStim) };
+  }
+  function yearReport(atti, year, settings, closings) {
+    const months = [], tot = emptyAgg(), groups = { oro: emptyAgg(), argento: emptyAgg(), misto: emptyAgg() }, grams = { oro: {}, argento: {} };
+    let netStim = 0, netKnown = false, incassato = 0, nIncassati = 0, riconProvv = 0, nRiconProvv = 0, riconUtile = 0, nRiconUtile = 0;
+    for (let m = 1; m <= 12; m++) {
+      const mr = monthReport(atti, year + '-' + String(m).padStart(2, '0'), settings, closings);
+      months.push(mr);
+      addAgg(tot, mr.tot);
+      for (const k of ['oro', 'argento', 'misto']) addAgg(groups[k], mr.groups[k]);
+      gramsMerge(grams, mr.grams);
+      if (mr.netStim != null) { netStim += mr.netStim; netKnown = true; }
+      const cl = mr.closing;
+      if (cl) {
+        if (cl.nettoIncassato != null) { incassato += cl.nettoIncassato; nIncassati++; }
+        if (cl.aziendaProvv != null) { riconProvv += cl.aziendaProvv; nRiconProvv++; }
+        if (cl.aziendaUtile != null) { riconUtile += cl.aziendaUtile; nRiconUtile++; }
+      }
+    }
+    return { year, months, tot, groups, grams, gramsTot: gramsTotals(grams), netStim: netKnown ? netStim : null, incassato, nIncassati, riconProvv, nRiconProvv, riconUtile, nRiconUtile };
+  }
+  function totalIncassato(closings) { let s = 0; for (const k in closings) if (closings[k].nettoIncassato != null) s += closings[k].nettoIncassato; return s; }
+  function yearsPresent(atti, closings, extraYear) {
+    const ys = new Set();
+    for (const a of activeAtti(atti)) ys.add(a.date.slice(0, 4));
+    for (const k in closings) ys.add(k.slice(0, 4));
+    if (extraYear) ys.add(String(extraYear));
+    return [...ys].sort();
+  }
+
+  // ---- numerazione ----
+  function usedNumbers(atti, settings) {
+    const s = new Set(atti.map(a => a.number));
+    for (const n of (settings.retiredNumbers || [])) s.add(n);
+    return s;
+  }
+  function nextAvailable(atti, settings) {
+    const used = usedNumbers(atti, settings);
+    let n = settings.nextNumber;
+    while (used.has(n)) n++;
+    return n;
+  }
+
+  // ---- CSV (separatore ; e virgola decimale, compatibile con Excel in italiano) ----
+  const csvCell = v => { if (v == null) return ''; const s = String(v); return /[";\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const toCsv = rows => '\uFEFF' + rows.map(r => r.map(csvCell).join(';')).join('\r\n') + '\r\n';
+  const plain = s => String(s).replace(/\u00a0/g, ' ');
+  function csvAtti(atti, settings) {
+    const rows = [['Numero atto', 'Data conferimento', 'Ora conferimento', 'Metalli', 'Quotazione oro 24 kt (€/g)', 'Valmax (€)', 'Prezzo pagato (€)', 'Utile lordo (€)', 'Provvigione (%)', 'Provvigione lorda (€)', 'Netto stimato (€)', 'Peso oro (g)', 'Peso argento (g)', 'Oggetti', 'Note', 'Registrato il', 'Ultima modifica']];
+    for (const a of activeAtti(atti).sort((x, y) => x.number - y.number)) {
+      const c = calcAtto(a), coef = coefForMonth(settings.coefHistory, a.date.slice(0, 7));
+      const pOro = round3(sum(a.righe.filter(r => r.metal === 'oro').map(r => r.peso)));
+      const pArg = round3(sum(a.righe.filter(r => r.metal === 'argento').map(r => r.peso)));
+      rows.push([a.number, dateIt(a.date), a.time, plain(metalSummary(a)), centsPlain(a.goldQuote), centsPlain(c.valmax), centsPlain(c.prezzo), centsPlain(c.utile), String(a.ratePct).replace('.', ','), centsPlain(c.provv), coef ? centsPlain(netOf(c.provv, coef)) : '', gPlain(pOro), gPlain(pArg), a.righe.length, a.note || '', isoIt(a.createdAt), isoIt(a.updatedAt)]);
+    }
+    return toCsv(rows);
+  }
+  function csvOggetti(atti) {
+    const rows = [['Numero atto', 'Data conferimento', 'Metallo', 'Caratura o titolo', 'Tipologie', 'Descrizione', 'Peso complessivo (g)', 'Quantitativo effettivo (g)', 'Scarto preciso (g)', 'Scarto ipotetico (g)', 'Valmax riga (€)', 'Prezzo pagato riga (€)', 'Valmax inserito', 'Prezzo inserito', 'Note oggetto']];
+    for (const a of activeAtti(atti).sort((x, y) => x.number - y.number)) for (const r of a.righe) {
+      rows.push([a.number, dateIt(a.date), r.metal === 'oro' ? 'Oro' : 'Argento', plain(r.metal === 'oro' ? caratLabel(r.caratura) : titoloLabel(r.titolo)), (r.tipologie || []).join(', '), r.desc || '', gPlain(r.peso), gPlain(r.quantita), gPlain(r.scartoPreciso), gPlain(r.scartoIpotetico), a.valmaxMode === 'righe' ? centsPlain(r.valmax) : '', a.prezzoMode === 'righe' ? centsPlain(r.prezzo) : '', a.valmaxMode === 'righe' ? 'per oggetto' : 'totale atto', a.prezzoMode === 'righe' ? 'per oggetto' : 'totale atto', r.note || '']);
+    }
+    return toCsv(rows);
+  }
+  function csvMensile(atti, settings, closings, years) {
+    const rows = [['Mese', 'Atti', 'Valmax (€)', 'Pagato (€)', 'Utile lordo (€)', 'Provvigioni lorde (€)', 'Coefficiente netto (%)', 'Netto stimato (€)', 'Utile riconosciuto (€)', 'Provvigioni riconosciute (€)', 'Netto incassato (€)', 'Differenza utile (€)', 'Differenza provvigioni (€)', 'Peso oro (g)', 'Peso argento (g)', 'Note chiusura']];
+    for (const y of years) for (let m = 1; m <= 12; m++) {
+      const mr = monthReport(atti, y + '-' + String(m).padStart(2, '0'), settings, closings);
+      if (!mr.tot.n && !mr.closing) continue;
+      const cl = mr.closing || {};
+      rows.push([monthLabel(mr.ym), mr.tot.n, centsPlain(mr.tot.valmax), centsPlain(mr.tot.prezzo), centsPlain(mr.tot.utile), centsPlain(mr.tot.provv), mr.coef ? fmtNum(coefPct(mr.coef), 2, true) : '', centsPlain(mr.netStim), centsPlain(cl.aziendaUtile), centsPlain(cl.aziendaProvv), centsPlain(cl.nettoIncassato), centsPlain(mr.recon.dUtile), centsPlain(mr.recon.dProvv), gPlain(mr.gramsTot.oro.peso), gPlain(mr.gramsTot.argento.peso), cl.note || '']);
+    }
+    return toCsv(rows);
+  }
+  function csvAnnuale(atti, settings, closings, years) {
+    const rows = [['Anno', 'Atti', 'Valmax (€)', 'Pagato (€)', 'Utile lordo (€)', 'Provvigioni lorde (€)', 'Netto stimato (€)', 'Provvigioni riconosciute (€)', 'Netto incassato (€)', 'Peso oro (g)', 'Peso argento (g)']];
+    for (const y of years) {
+      const yr = yearReport(atti, y, settings, closings);
+      rows.push([y, yr.tot.n, centsPlain(yr.tot.valmax), centsPlain(yr.tot.prezzo), centsPlain(yr.tot.utile), centsPlain(yr.tot.provv), centsPlain(yr.netStim), centsPlain(yr.riconProvv), centsPlain(yr.incassato), gPlain(yr.gramsTot.oro.peso), gPlain(yr.gramsTot.argento.peso)]);
+    }
+    return toCsv(rows);
+  }
+
+  return { CARATURE, MESI, MESI_BREVI, round3, toCents, parseGrams, parseDec, parseIntStrict, fmtEur, fmtEurSigned, centsPlain, fmtNum, fmtG, fmtPct, fmtPctSigned, gPlain, caratLabel, titoloLabel, rateLabel, romeParts, dateIt, isoIt, addMonths, monthLabel, monthName, provvOf, calcAtto, metalSummary, coefFromPair, coefFromPct, coefForMonth, netOf, coefPct, activeAtti, monthReport, yearReport, totalIncassato, yearsPresent, usedNumbers, nextAvailable, csvAtti, csvOggetti, csvMensile, csvAnnuale };
+})();
+/*CORE-END*/
+
+/* ===================== ARCHIVIO LOCALE (IndexedDB) ===================== */
+const APP_VERSION = '1.0.0';
+const DB_NAME = 'registro-provvigioni';
+const DB_VER = 1;
+const IDB = {
+  db: null,
+  open() {
+    return new Promise((res, rej) => {
+      if (!('indexedDB' in window)) return rej(new Error('IndexedDB non disponibile in questo browser'));
+      const r = indexedDB.open(DB_NAME, DB_VER);
+      r.onupgradeneeded = () => {
+        const d = r.result;
+        if (!d.objectStoreNames.contains('kv')) d.createObjectStore('kv');
+        if (!d.objectStoreNames.contains('atti')) d.createObjectStore('atti', { keyPath: 'id' });
+        if (!d.objectStoreNames.contains('photos')) d.createObjectStore('photos', { keyPath: 'id' }).createIndex('attoId', 'attoId');
+        if (!d.objectStoreNames.contains('closings')) d.createObjectStore('closings', { keyPath: 'ym' });
+      };
+      r.onsuccess = () => { this.db = r.result; this.db.onversionchange = () => this.db.close(); res(this.db); };
+      r.onerror = () => rej(r.error);
+      r.onblocked = () => rej(new Error('Archivio bloccato da un’altra finestra dell’app: chiudila e riprova.'));
+    });
+  },
+  req(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
+  get(store, key) { return this.req(this.db.transaction(store).objectStore(store).get(key)); },
+  getAll(store) { return this.req(this.db.transaction(store).objectStore(store).getAll()); },
+  photosOf(attoId) { return this.req(this.db.transaction('photos').objectStore('photos').index('attoId').getAll(attoId)); },
+  run(stores, fn) {
+    return new Promise((res, rej) => {
+      const t = this.db.transaction(stores, 'readwrite');
+      t.oncomplete = () => res();
+      t.onerror = () => rej(t.error);
+      t.onabort = () => rej(t.error || new Error('Salvataggio annullato'));
+      try { fn(t); } catch (e) { try { t.abort(); } catch (_) {} rej(e); }
+    });
+  }
+};
+
+/* ===================== STATO ===================== */
+const ENV = { viewer: !!(window.claude && typeof window.claude.use === 'function') };
+const DEFAULT_TIP = ['Anelli', 'Fedi', 'Catene', 'Collane', 'Bracciali', 'Orecchini', 'Ciondoli', 'Medaglie', 'Monete', 'Lingotti', 'Orologi', 'Posate', 'Rottame', 'Dentale'];
+function defaultSettings() {
+  return { setupDone: false, startNumber: null, nextNumber: null, ratePct: 2, coefHistory: [], silverTitles: ['999', '925', '900', '835', '800'], tipologie: DEFAULT_TIP.slice(), retiredNumbers: [], lastBackupAt: null, lastBackupPhotos: false, dataChangedAt: null, createdAt: new Date().toISOString() };
+}
+const S = { settings: null, atti: [], closings: {}, view: 'home', arg: null, from: 'home', draft: null, rTab: 'mese', rYm: null, rYear: null, filters: { q: '', day: '', month: '', year: '', metal: '', carat: '', titolo: '' }, showFilters: false, urls: new Map(), persisted: null };
+
+const $ = (s, el) => (el || document).querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+const nowIso = () => new Date().toISOString();
+const curYm = () => Core.romeParts().date.slice(0, 7);
+const E = Core.fmtEur;
+const cls = n => n > 0 ? 'pos' : n < 0 ? 'neg' : '';
+
+async function loadAll() {
+  const s = await IDB.get('kv', 'settings');
+  S.settings = Object.assign(defaultSettings(), s || {});
+  S.atti = await IDB.getAll('atti');
+  const cl = await IDB.getAll('closings');
+  S.closings = Object.fromEntries(cl.map(c => [c.ym, c]));
+}
+async function putSettings(next) {
+  await IDB.run(['kv'], t => t.objectStore('kv').put(next, 'settings'));
+  S.settings = next;
+}
+
+/* ===================== UTILITÀ UI ===================== */
+let toastTimer = null;
+function toast(msg, ms) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, ms || 2600);
+}
+function modal({ title, body = '', actions, onOpen }) {
+  actions = actions || [{ label: 'Chiudi', value: null, kind: 'ghost' }];
+  return new Promise(resolve => {
+    const ov = document.createElement('div');
+    ov.className = 'ov';
+    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}"><h2 class="sh-title">${esc(title)}</h2><div class="sh-body">${body}</div><div class="sh-err" hidden></div><div class="sh-actions">${actions.map((a, i) => `<button class="btn ${a.kind || ''}" data-mi="${i}">${esc(a.label)}</button>`).join('')}</div></div>`;
+    document.body.appendChild(ov);
+    const close = v => { ov.remove(); resolve(v); };
+    ov.addEventListener('click', async ev => {
+      const b = ev.target.closest('[data-mi]');
+      if (b) {
+        const a = actions[+b.dataset.mi];
+        if (a.validate) {
+          const r = await a.validate(ov);
+          if (r && r.error) { const e = ov.querySelector('.sh-err'); e.textContent = r.error; e.hidden = false; return; }
+          close(r === undefined ? a.value : r); return;
+        }
+        close(a.value);
+      } else if (ev.target === ov) close(null);
+    });
+    if (onOpen) onOpen(ov);
+  });
+}
+function confirmBox(title, text, okLabel, danger) {
+  return modal({ title, body: `<p>${text}</p>`, actions: [{ label: okLabel || 'Conferma', value: true, kind: danger ? 'danger' : 'primary' }, { label: 'Annulla', value: false, kind: 'ghost' }] });
+}
+const ICON = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/></svg>',
+  archive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10.5h14V9"/><path d="M10 13h4"/></svg>',
+  reports: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20.5h18"/><path d="M6 17V11"/><path d="M11 17V5"/><path d="M16 17v-4"/><path d="M20 17V8"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>'
+};
+function navHtml(active) {
+  const tabs = [['home', 'Home'], ['archive', 'Archivio'], ['reports', 'Report'], ['settings', 'Impostazioni']];
+  return `<nav class="nav noprint" aria-label="Sezioni"><div class="nav-in">${tabs.map(([k, l]) => `<button class="${active === k ? 'on' : ''}" data-act="nav" data-arg="${k}" ${active === k ? 'aria-current="page"' : ''}>${ICON[k]}<span>${l}</span></button>`).join('')}</div></nav>`;
+}
+// Fuori da claude.ai le foto si mostrano con URL blob; dentro il visualizzatore con URL data (più compatibili).
+function makeSrc(buf, type) {
+  const b = new Blob([buf], { type: type || 'image/jpeg' });
+  if (!ENV.viewer) return Promise.resolve(URL.createObjectURL(b));
+  return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = () => rej(fr.error); fr.readAsDataURL(b); });
+}
+const freeSrc = u => { if (u && u.startsWith('blob:')) URL.revokeObjectURL(u); };
+async function photoSrc(p) { if (!S.urls.has(p.id)) S.urls.set(p.id, await makeSrc(p.buf, p.type)); return S.urls.get(p.id); }
+function revokeUrls() { for (const u of S.urls.values()) freeSrc(u); S.urls.clear(); }
+
+/* ===================== NAVIGAZIONE ===================== */
+function go(view, arg, opts) {
+  if (S.view === 'detail' || S.view === 'form') { if (view !== 'detail' && view !== 'form') revokeUrls(); }
+  if (view === 'detail' && S.view !== 'detail' && S.view !== 'form') S.from = S.view;
+  S.view = view; S.arg = arg;
+  render();
+  if (!opts || !opts.keepScroll) window.scrollTo(0, 0);
+}
+function render() {
+  const app = $('#app');
+  if (!S.settings.setupDone) { app.innerHTML = onboardingHtml(); return; }
+  switch (S.view) {
+    case 'home': app.innerHTML = homeHtml() + navHtml('home'); break;
+    case 'archive': app.innerHTML = archiveHtml() + navHtml('archive'); break;
+    case 'reports': app.innerHTML = reportsHtml() + navHtml('reports'); break;
+    case 'settings': app.innerHTML = settingsHtml() + navHtml('settings'); fillStorageInfo(); break;
+    case 'trash': app.innerHTML = trashHtml() + navHtml('settings'); break;
+    case 'detail': app.innerHTML = detailHtml(S.arg) + navHtml(S.from === 'home' || S.from === 'reports' ? S.from : 'archive'); loadDetailPhotos(S.arg); break;
+    case 'form': app.innerHTML = formHtml(); break;
+    default: app.innerHTML = homeHtml() + navHtml('home');
+  }
+}
+
+/* ===================== PRIMO AVVIO ===================== */
+function onboardingHtml() {
+  return `<div class="onb">
+    <span class="punch xl" aria-hidden="true">N.</span>
+    <h1>Registro provvigioni</h1>
+    <p class="lead">Da quale numero riparte la numerazione dei tuoi atti?</p>
+    <label class="fld"><span>Numero del primo atto da registrare</span><input id="onb-num" inputmode="numeric" pattern="[0-9]*" placeholder="Es. 347" autocomplete="off"></label>
+    <p class="hint">Il primo atto avrà questo numero, poi la numerazione prosegue da sola. Puoi correggerlo in qualsiasi momento da Impostazioni.</p>
+    <div class="sh-err" id="onb-err" hidden></div>
+    <button class="btn primary big" data-act="onb-start">Inizia</button>
+    <label class="btn ghost file">Ripristina da un backup<input type="file" accept=".json,application/json" data-file="restore"></label>
+    <p class="hint">I dati restano su questo dispositivo: nessun invio a server, nessuna pubblicità o statistica.</p>
+  </div>`;
+}
+
+/* ===================== HOME ===================== */
+function chartSvg(points, mode, hi) {
+  const W = 340, H = 168, pt = 26, pb = 24, n = points.length;
+  if (hi == null || hi < 0) hi = n - 1;
+  const max = Math.max(1, ...points.map(p => Math.max(p.val || 0, p.inc || 0)));
+  const bw = W / n, inner = H - pt - pb;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${mode === 'net' ? 'Netto stimato' : 'Provvigioni lorde'} mese per mese, ultimi 12 mesi">`;
+  s += `<line x1="0" x2="${W}" y1="${H - pb + .5}" y2="${H - pb + .5}" stroke="var(--line)" />`;
+  points.forEach((p, i) => {
+    const x = i * bw + bw * .2, w = bw * .6, h = Math.round((p.val || 0) / max * inner), y = H - pb - h;
+    const last = i === hi;
+    if (h > 0) s += `<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${h}" rx="2.5" fill="${last ? 'var(--gold)' : 'var(--gold-dim)'}"/>`;
+    if (p.inc != null) { const yi = H - pb - Math.round(p.inc / max * inner); s += `<rect x="${(i * bw + bw * .1).toFixed(1)}" y="${yi - 1.5}" width="${(bw * .8).toFixed(1)}" height="3" rx="1.5" fill="var(--pos)"/>`; }
+    s += `<text x="${(i * bw + bw / 2).toFixed(1)}" y="${H - 7}" text-anchor="middle" font-size="10.5" fill="${last ? 'var(--ink)' : 'var(--ink3)'}" font-family="var(--sans)">${Core.MESI_BREVI[+p.ym.slice(5) - 1]}</text>`;
+    if (last && p.val) s += `<text x="${Math.min(W - 4, Math.max(4, i * bw + bw / 2)).toFixed(1)}" y="${Math.max(12, y - 7)}" text-anchor="end" font-size="11.5" fill="var(--gold)" font-family="var(--sans)">${esc(E(p.val))}</text>`;
+  });
+  return s + '</svg>';
+}
+function homeHtml() {
+  const ym = curYm(), year = ym.slice(0, 4);
+  const mr = Core.monthReport(S.atti, ym, S.settings, S.closings);
+  const yr = Core.yearReport(S.atti, year, S.settings, S.closings);
+  const coef = Core.coefForMonth(S.settings.coefHistory, ym);
+  const allInc = Core.totalIncassato(S.closings);
+  const pts = [];
+  for (let k = 11; k >= 0; k--) {
+    const m = Core.addMonths(ym, -k), r = Core.monthReport(S.atti, m, S.settings, S.closings);
+    pts.push({ ym: m, val: coef ? r.netStim : r.tot.provv, inc: r.closing && r.closing.nettoIncassato != null ? r.closing.nettoIncassato : null });
+  }
+  const st = S.settings, nAtti = Core.activeAtti(S.atti).length;
+  const changedSince = st.dataChangedAt && (!st.lastBackupAt || st.dataChangedAt > st.lastBackupAt);
+  const bl = !nAtti ? '' : `<div class="backup-line ${changedSince ? 'warn' : ''}"><span>${st.lastBackupAt ? `Ultimo backup ${Core.isoIt(st.lastBackupAt).split(' ')[0]}${st.lastBackupPhotos ? '' : ' (senza foto)'}${changedSince ? ': ci sono dati più recenti' : ''}` : 'Nessun backup ancora esportato'}</span><button class="link" data-act="nav" data-arg="settings" data-scroll="backup">Esegui backup</button></div>`;
+  return `<header class="top"><div class="top-in"><div><h1>Registro provvigioni</h1><div class="sub">${Core.monthLabel(ym)}</div></div></div></header>
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-label">Provvigioni nette stimate del mese</div>
+      <div class="hero-fig ${coef ? '' : 'off'}" id="home-net">${coef ? esc(E(mr.netStim)) : '—'}</div>
+      <div class="hero-note">${coef ? `Coefficiente netto ${esc(Core.fmtPct(Core.coefPct(coef)))} applicato a ${esc(E(mr.tot.provv))} di provvigioni lorde.` : `La stima del netto si attiva alla prima chiusura mensile, quando inserisci una sola volta lordo e netto della tua prima liquidazione. <button class="link" data-act="go-close">Configura ora</button>`}</div>
+    </section>
+    <div class="stat3">
+      <div><span>Provvigioni lorde maturate</span><b class="fig" id="home-gross">${esc(E(mr.tot.provv))}</b></div>
+      <div><span>Utile lordo generato</span><b class="fig ${cls(mr.tot.utile)}">${esc(E(mr.tot.utile))}</b></div>
+      <div><span>Atti</span><b class="fig" id="home-n">${mr.tot.n}</b></div>
+    </div>
+    <button class="btn primary big" data-act="new-atto">${ICON.plus}Nuovo atto</button>
+    <section class="sec">
+      <div class="sec-head"><h2>Anno ${year}</h2><span class="sub">${yr.tot.n} atti, utile ${esc(E(yr.tot.utile))}</span></div>
+      <div class="panel"><ul class="four">
+        <li><span class="mk mat"></span><span class="lbl">Maturate<small>Provvigioni lorde calcolate dall’app</small></span><span class="val" id="year-gross">${esc(E(yr.tot.provv))}</span></li>
+        <li><span class="mk ric"></span><span class="lbl">Riconosciute dall’azienda<small>${yr.nRiconProvv ? `Registrate per ${yr.nRiconProvv} ${yr.nRiconProvv === 1 ? 'mese' : 'mesi'}` : 'Nessuna chiusura registrata'}</small></span><span class="val">${yr.nRiconProvv ? esc(E(yr.riconProvv)) : '—'}</span></li>
+        <li class="key"><span class="mk sti"></span><span class="lbl">Nette stimate<small>Lorde × coefficiente netto</small></span><span class="val" id="year-net">${yr.netStim != null ? esc(E(yr.netStim)) : '—'}</span></li>
+        <li><span class="mk inc"></span><span class="lbl">Nette incassate<small>${yr.nIncassati ? `Registrate per ${yr.nIncassati} ${yr.nIncassati === 1 ? 'mese' : 'mesi'}` : 'Nessun incasso registrato'}</small></span><span class="val">${yr.nIncassati ? esc(E(yr.incassato)) : '—'}</span></li>
+      </ul></div>
+    </section>
+    <section class="sec chart">
+      <div class="sec-head"><h2>Andamento</h2><span class="sub">Ultimi 12 mesi</span></div>
+      <div class="legend"><span><i class="mk sti" style="border-radius:2px"></i>${coef ? 'Netto stimato' : 'Provvigioni lorde'}</span><span><i class="mk inc" style="height:3px;width:14px"></i>Netto incassato</span></div>
+      ${chartSvg(pts, coef ? 'net' : 'gross')}
+    </section>
+    <section class="sec">
+      <div class="srow" style="border-top:1px solid var(--line-soft)"><span class="sl">Totale nette incassate<small>Tutti gli importi registrati, dall’inizio</small></span><span class="sv" id="all-inc">${esc(E(allInc))}</span></div>
+    </section>
+    ${bl}
+  </main>`;
+}
+
+/* ===================== ARCHIVIO ===================== */
+function filteredAtti() {
+  const f = S.filters;
+  let list = Core.activeAtti(S.atti);
+  if (f.q.trim()) { const q = f.q.trim().replace(/\D/g, ''); if (q) list = list.filter(a => String(a.number).includes(q)); }
+  if (f.day) list = list.filter(a => a.date === f.day);
+  if (f.month) list = list.filter(a => a.date.slice(5, 7) === f.month);
+  if (f.year) list = list.filter(a => a.date.slice(0, 4) === f.year);
+  if (f.metal) list = list.filter(a => a.righe.some(r => r.metal === f.metal));
+  if (f.carat) list = list.filter(a => a.righe.some(r => r.metal === 'oro' && r.caratura === f.carat));
+  if (f.titolo) list = list.filter(a => a.righe.some(r => r.metal === 'argento' && r.titolo === f.titolo));
+  return list.sort((a, b) => b.number - a.number);
+}
+function attoRowHtml(a) {
+  const c = Core.calcAtto(a);
+  return `<li><button class="arow" data-act="open" data-arg="${a.id}">
+    <span class="punch">${a.number}</span>
+    <span><span class="meta"><span class="when">${Core.dateIt(a.date)} alle ${esc(a.time)}</span><span class="tag ${c.kind}">${esc(Core.metalSummary(a))}</span></span>
+    <span class="figs"><span>Valmax <b>${esc(E(c.valmax))}</b></span><span>Pagato <b>${esc(E(c.prezzo))}</b></span><span>Utile <b class="${cls(c.utile)}">${esc(E(c.utile))}</b></span><span class="fprov">Provv. <b>${esc(E(c.provv))}</b></span></span></span>
+  </button></li>`;
+}
+function archiveListHtml() {
+  const list = filteredAtti();
+  if (!Core.activeAtti(S.atti).length) return `<div class="empty"><p>Nessun atto registrato.</p><button class="btn primary" data-act="new-atto">Registra il primo atto</button></div>`;
+  let u = 0, p = 0; for (const a of list) { const c = Core.calcAtto(a); u += c.utile; p += c.provv; }
+  return `<div class="asum"><span><b>${list.length}</b> ${list.length === 1 ? 'atto' : 'atti'}</span><span>Utile <b>${esc(E(u))}</b></span><span>Provvigioni <b>${esc(E(p))}</b></span></div>
+    ${list.length ? `<ul class="alist">${list.map(attoRowHtml).join('')}</ul>` : `<div class="empty"><p>Nessun atto corrisponde ai filtri.</p><button class="btn ghost small" data-act="f-reset">Azzera filtri</button></div>`}`;
+}
+function archiveHtml() {
+  const f = S.filters;
+  const years = Core.yearsPresent(S.atti, {}, null);
+  const titles = [...new Set([...S.settings.silverTitles, ...Core.activeAtti(S.atti).flatMap(a => a.righe.filter(r => r.metal === 'argento').map(r => r.titolo))])];
+  const active = ['day', 'month', 'year', 'metal', 'carat', 'titolo'].filter(k => f[k]).length;
+  return `<header class="top"><div class="top-in bar"><h1>Archivio</h1><button class="link" data-act="new-atto">${ICON.plus}Nuovo</button></div></header>
+  <main class="wrap">
+    <div class="filters">
+      <div class="fbar" style="margin-top:10px"><input type="search" inputmode="numeric" placeholder="Cerca numero atto" data-filter="q" value="${esc(f.q)}" aria-label="Cerca per numero atto"><button class="btn ghost small" data-act="f-toggle" aria-expanded="${S.showFilters}">Filtri${active ? ` (${active})` : ''}</button></div>
+      ${S.showFilters ? `
+      <div class="seg sm">${[['', 'Tutti'], ['oro', 'Oro'], ['argento', 'Argento']].map(([k, l]) => `<button class="${f.metal === k ? 'on' : ''}" data-act="f-metal" data-arg="${k}">${l}</button>`).join('')}</div>
+      <div class="grid2">
+        <label class="fld"><span>Giorno</span><input type="date" data-filter="day" value="${esc(f.day)}"></label>
+        <label class="fld"><span>Mese</span><select data-filter="month"><option value="">Tutti</option>${Core.MESI.map((m, i) => `<option value="${String(i + 1).padStart(2, '0')}" ${f.month === String(i + 1).padStart(2, '0') ? 'selected' : ''}>${Core.monthName(i + 1)}</option>`).join('')}</select></label>
+        <label class="fld"><span>Anno</span><select data-filter="year"><option value="">Tutti</option>${years.map(y => `<option ${f.year === y ? 'selected' : ''}>${y}</option>`).join('')}</select></label>
+        <label class="fld"><span>Caratura</span><select data-filter="carat"><option value="">Tutte</option>${Core.CARATURE.map(c => `<option value="${c}" ${f.carat === c ? 'selected' : ''}>${Core.caratLabel(c)}</option>`).join('')}</select></label>
+        <label class="fld"><span>Titolo argento</span><select data-filter="titolo"><option value="">Tutti</option>${titles.map(t => `<option value="${esc(t)}" ${f.titolo === t ? 'selected' : ''}>${esc(Core.titoloLabel(t))}</option>`).join('')}</select></label>
+        <div class="fld" style="display:flex;align-items:flex-end"><button class="btn ghost" data-act="f-reset">Azzera filtri</button></div>
+      </div>` : ''}
+    </div>
+    <div id="alist">${archiveListHtml()}</div>
+  </main>`;
+}
+
+/* ===================== DETTAGLIO ATTO ===================== */
+function detailHtml(id) {
+  const a = S.atti.find(x => x.id === id);
+  if (!a) return `<main class="wrap"><div class="empty"><p>Atto non trovato.</p></div></main>`;
+  const c = Core.calcAtto(a);
+  const coef = Core.coefForMonth(S.settings.coefHistory, a.date.slice(0, 7));
+  const net = coef ? Core.netOf(c.provv, coef) : null;
+  const righe = a.righe.map(r => {
+    const oro = r.metal === 'oro';
+    const kv = [['Peso complessivo', Core.fmtG(r.peso)]];
+    if (r.quantita != null) kv.push([oro ? 'Oro effettivo' : 'Argento effettivo', Core.fmtG(r.quantita)]);
+    if (r.scartoPreciso != null) kv.push(['Scarto preciso', Core.fmtG(r.scartoPreciso)]);
+    if (r.scartoIpotetico != null) kv.push(['Scarto ipotetico', Core.fmtG(r.scartoIpotetico)]);
+    if (a.valmaxMode === 'righe') kv.push(['Valmax', E(r.valmax)]);
+    if (a.prezzoMode === 'righe') kv.push(['Prezzo pagato', E(r.prezzo)]);
+    return `<div class="dr"><div class="dr-h"><span class="dot ${r.metal}"></span>${oro ? 'Oro ' + esc(Core.caratLabel(r.caratura)) : 'Argento ' + esc(Core.titoloLabel(r.titolo))}${r.tipologie && r.tipologie.length ? `<span class="tips">${esc(r.tipologie.join(', '))}</span>` : ''}</div>
+      ${r.desc ? `<div class="note-box" style="margin-top:4px">${esc(r.desc)}</div>` : ''}
+      <dl class="kv">${kv.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+      ${r.note ? `<div class="note-box">${esc(r.note)}</div>` : ''}</div>`;
+  }).join('');
+  const hist = (a.history || []).slice().reverse().map(h => `<li><time>${esc(Core.isoIt(h.at))}</time>${esc(h.kind === 'creato' ? 'Atto registrato' : h.kind === 'eliminato' ? 'Atto eliminato' : h.kind === 'ripristinato' ? 'Atto ripristinato' : h.kind === 'foto' ? 'Foto' : 'Modificato')}${h.changes && h.changes.length ? ': ' + esc(h.changes.map(x => x.campo + (x.da != null || x.a != null ? ` ${x.da == null ? '—' : x.da} → ${x.a == null ? '—' : x.a}` : '')).join('; ')) : ''}</li>`).join('');
+  return `<header class="top"><div class="top-in bar"><button class="link" data-act="back">${ICON.back}Indietro</button><span class="bar-title">Atto</span><button class="link" data-act="edit-atto" data-arg="${a.id}" ${a.deletedAt ? 'disabled style="visibility:hidden"' : ''}>Modifica</button></div></header>
+  <main class="wrap">
+    ${a.deletedAt ? `<div class="notice">Atto eliminato il ${esc(Core.isoIt(a.deletedAt))}. Non entra nei totali. <button class="link" data-act="trash-restore" data-arg="${a.id}">Ripristina</button></div>` : ''}
+    <section class="dhead"><span class="punch lg">${a.number}</span><div><div class="d1">${Core.dateIt(a.date)} alle ${esc(a.time)}</div><div class="d2">${esc(Core.metalSummary(a))}</div></div></section>
+    <section class="econ">
+      <div><span>Valmax${a.valmaxMode === 'atto' ? ' (totale atto)' : ''}</span><b class="fig">${esc(E(c.valmax))}</b></div>
+      <div><span>Prezzo effettivamente pagato${a.prezzoMode === 'atto' ? ' (totale atto)' : ''}</span><b class="fig">${esc(E(c.prezzo))}</b></div>
+      <div><span>Utile lordo</span><b class="fig ${cls(c.utile)}" id="d-utile">${esc(E(c.utile))}</b></div>
+      <div class="key"><span>Provvigione lorda (${esc(Core.rateLabel(a.ratePct))})</span><b class="fig" id="d-provv">${esc(E(c.provv))}</b></div>
+      <div class="soft"><span>Netto stimato, indicativo</span><b class="fig">${net != null ? esc(E(net)) : '—'}</b></div>
+    </section>
+    ${a.goldQuote != null ? `<p class="hint">Quotazione oro 24 kt al conferimento: ${esc(E(a.goldQuote))}/g (solo riferimento)</p>` : ''}
+    <section class="sec"><h2>Oggetti</h2>${righe}</section>
+    <section class="sec"><div class="sec-head"><h2>Foto</h2></div>
+      <div class="thumbs" id="dthumbs"></div>
+      ${a.deletedAt ? '' : `<div class="btnrow noprint"><label class="btn ghost file">Scatta foto<input type="file" accept="image/*" capture="environment" data-file="photo-detail"></label><label class="btn ghost file">Dalla libreria<input type="file" accept="image/*" multiple data-file="photo-detail"></label></div>`}
+    </section>
+    ${a.note ? `<section class="sec"><h2>Note</h2><div class="note-box">${esc(a.note)}</div></section>` : ''}
+    <section class="sec"><h2>Registrazione</h2><dl class="kv">
+      <dt>Registrato il</dt><dd>${esc(Core.isoIt(a.createdAt))}</dd>
+      <dt>Ultima modifica</dt><dd>${esc(Core.isoIt(a.updatedAt))}</dd>
+      <dt>Data effettiva conferimento</dt><dd>${Core.dateIt(a.date)} ${esc(a.time)}</dd>
+    </dl></section>
+    <section class="sec"><h2>Storico modifiche</h2><ul class="hist">${hist}</ul></section>
+    ${a.deletedAt ? '' : `<div class="stack noprint" style="margin-top:26px"><button class="btn ghost" data-act="edit-atto" data-arg="${a.id}">Modifica atto</button><button class="btn danger" data-act="delete-atto" data-arg="${a.id}">Elimina atto</button></div>`}
+  </main>`;
+}
+async function loadDetailPhotos(id) {
+  const box = $('#dthumbs'); if (!box) return;
+  const ps = (await IDB.photosOf(id)).sort((x, y) => (x.createdAt < y.createdAt ? -1 : 1));
+  const srcs = await Promise.all(ps.map(photoSrc));
+  if (S.view !== 'detail' || S.arg !== id || !$('#dthumbs')) return;
+  S.detailPhotos = ps;
+  $('#dthumbs').innerHTML = ps.map((p, i) => `<button class="thumb" data-act="pv-detail" data-arg="${i}" aria-label="Apri foto ${i + 1}"><img src="${srcs[i]}" alt=""></button>`).join('');
+}
+
+/* ===================== FOTO ===================== */
+function loadImg(url) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('Immagine non leggibile')); i.src = url; }); }
+async function compressImage(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImg(url);
+    const max = 1800, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+    const cw = Math.round(w * k), ch = Math.round(h * k);
+    const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+    cv.getContext('2d').drawImage(img, 0, 0, cw, ch);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.85));
+    if (!blob) throw new Error('compressione non riuscita');
+    return { buf: await blob.arrayBuffer(), type: 'image/jpeg', w: cw, h: ch };
+  } catch (e) {
+    return { buf: await file.arrayBuffer(), type: file.type || 'image/jpeg', w: null, h: null };
+  } finally { URL.revokeObjectURL(url); }
+}
+function photoViewer(items, start, onDelete) {
+  let i = start;
+  const ov = document.createElement('div');
+  ov.className = 'pv'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Foto a schermo intero');
+  const draw = () => {
+    ov.innerHTML = `<div class="pv-top"><span>${i + 1} di ${items.length}</span><button class="link" data-pv="close">Chiudi</button></div>
+      <div class="pv-img"><img src="${items[i].url}" alt="Foto ${i + 1}"></div>
+      <div class="pv-bot"><button class="link" data-pv="prev" ${i === 0 ? 'disabled style="opacity:.3"' : ''}>${ICON.back}Precedente</button>${onDelete ? '<button class="link danger" data-pv="del">Elimina</button>' : ''}<button class="link" data-pv="next" ${i === items.length - 1 ? 'disabled style="opacity:.3"' : ''}>Successiva<span style="display:inline-block;transform:scaleX(-1)">${ICON.back}</span></button></div>`;
+  };
+  draw(); document.body.appendChild(ov);
+  let x0 = null;
+  ov.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+  ov.addEventListener('touchend', e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) { if (dx < 0 && i < items.length - 1) i++; else if (dx > 0 && i > 0) i--; draw(); } });
+  ov.addEventListener('click', async e => {
+    const b = e.target.closest('[data-pv]'); if (!b) return;
+    const a = b.dataset.pv;
+    if (a === 'close') ov.remove();
+    else if (a === 'prev' && i > 0) { i--; draw(); }
+    else if (a === 'next' && i < items.length - 1) { i++; draw(); }
+    else if (a === 'del') { const ok = await confirmBox('Eliminare questa foto?', 'La foto verrà rimossa dall’atto.', 'Elimina foto', true); if (ok) { ov.remove(); onDelete(items[i]); } }
+  });
+}
+
+/* ===================== MODULO ATTO ===================== */
+const metalsOf = mode => mode === 'entrambi' ? ['oro', 'argento'] : [mode];
+function newRiga(metal) { return { id: uid(), metal, desc: '', tipologie: [], caratura: '18', titolo: '925', titoloCustom: '', peso: '', quantita: '', valmax: '', prezzo: '', scartoPreciso: '', scartoIpotetico: '', note: '' }; }
+const gIn = n => n == null ? '' : String(n).replace('.', ',');
+function draftNew() {
+  const r = Core.romeParts();
+  return { id: null, number: Core.nextAvailable(S.atti, S.settings), date: r.date, time: r.time, metalMode: 'oro', goldQuote: '', valmaxMode: 'righe', valmaxAtto: '', prezzoMode: 'righe', prezzoAtto: '', note: '', righe: [newRiga('oro')], photos: { existing: [], add: [], del: new Set() }, dirty: false };
+}
+function draftFromAtto(a) {
+  const titles = S.settings.silverTitles;
+  return {
+    id: a.id, number: a.number, origNumber: a.number, numberUnlocked: false, date: a.date, time: a.time, createdAt: a.createdAt, updatedAt: a.updatedAt,
+    metalMode: a.metalMode, goldQuote: Core.centsPlain(a.goldQuote), valmaxMode: a.valmaxMode, valmaxAtto: Core.centsPlain(a.valmaxAtto), prezzoMode: a.prezzoMode, prezzoAtto: Core.centsPlain(a.prezzoAtto), note: a.note || '', ratePct: a.ratePct,
+    righe: a.righe.map(r => ({ id: r.id, metal: r.metal, desc: r.desc || '', tipologie: (r.tipologie || []).slice(), caratura: r.caratura || '18', titolo: r.metal === 'argento' ? (titles.includes(r.titolo) ? r.titolo : '__custom') : '925', titoloCustom: r.metal === 'argento' && !titles.includes(r.titolo) ? (r.titolo || '') : '', peso: gIn(r.peso), quantita: gIn(r.quantita), valmax: Core.centsPlain(r.valmax), prezzo: Core.centsPlain(r.prezzo), scartoPreciso: gIn(r.scartoPreciso), scartoIpotetico: gIn(r.scartoIpotetico), note: r.note || '' })),
+    photos: { existing: [], add: [], del: new Set() }, dirty: false
+  };
+}
+function setPath(obj, path, val) { const p = path.split('.'); let o = obj; for (let i = 0; i < p.length - 1; i++) o = o[/^\d+$/.test(p[i]) ? +p[i] : p[i]]; o[p[p.length - 1]] = val; }
+function moneyFld(label, bind, val, extraId) { return `<label class="fld"><span>${label}</span><input inputmode="decimal" autocomplete="off" placeholder="0,00" data-bind="${bind}" value="${esc(val)}" ${extraId ? `id="${extraId}"` : ''}></label>`; }
+function gramFld(label, bind, val, ph) { return `<label class="fld"><span>${label}</span><input inputmode="decimal" autocomplete="off" placeholder="${ph || '0,00'}" data-bind="${bind}" value="${esc(val)}"></label>`; }
+function rigaHtml(r, i, d) {
+  const oro = r.metal === 'oro', st = S.settings;
+  const sameMetalIdx = d.righe.slice(0, i + 1).filter(x => x.metal === r.metal).length;
+  return `<div class="riga ${r.metal}" data-riga="${i}">
+    <div class="riga-head"><h3>${oro ? 'Oro' : 'Argento'}, oggetto ${sameMetalIdx}</h3>${d.righe.length > 1 ? `<button class="link danger" data-act="riga-del" data-arg="${i}">Rimuovi</button>` : ''}</div>
+    ${oro ? `<div class="fld"><span>Caratura</span><div class="chips">${Core.CARATURE.map(c => `<button class="chip ${r.caratura === c ? 'on' : ''}" data-act="riga-carat" data-arg="${i}|${c}">${Core.caratLabel(c)}</button>`).join('')}</div></div>`
+    : `<div class="fld"><span>Titolo</span><div class="chips">${st.silverTitles.map((t, k) => `<button class="chip ${r.titolo === t ? 'on' : ''}" data-act="riga-titolo" data-arg="${i}|${k}">${esc(Core.titoloLabel(t))}</button>`).join('')}<button class="chip ${r.titolo === '__custom' ? 'on' : ''}" data-act="riga-titolo" data-arg="${i}|custom">Altro</button></div>${r.titolo === '__custom' ? `<input style="margin-top:8px" placeholder="Titolo personalizzato, es. 950" data-bind="righe.${i}.titoloCustom" value="${esc(r.titoloCustom)}">` : ''}</div>`}
+    <div class="fld"><span>Tipologie</span><div class="chips tight">${st.tipologie.map((t, k) => `<button class="chip ${r.tipologie.includes(t) ? 'on' : ''}" data-act="riga-tip" data-arg="${i}|${k}">${esc(t)}</button>`).join('')}</div></div>
+    <label class="fld"><span>Descrizione <small>facoltativa</small></span><input data-bind="righe.${i}.desc" value="${esc(r.desc)}" autocomplete="off"></label>
+    <div class="grid2">
+      ${gramFld('Peso complessivo (g)', `righe.${i}.peso`, r.peso)}
+      ${gramFld(oro ? 'Oro effettivo (g)' : 'Argento effettivo (g)', `righe.${i}.quantita`, r.quantita, 'Facoltativo')}
+      ${gramFld('Scarto preciso (g)', `righe.${i}.scartoPreciso`, r.scartoPreciso, 'Facoltativo')}
+      ${gramFld('Scarto ipotetico (g)', `righe.${i}.scartoIpotetico`, r.scartoIpotetico, 'Facoltativo')}
+      ${d.valmaxMode === 'righe' ? moneyFld('Valmax (€)', `righe.${i}.valmax`, r.valmax) : ''}
+      ${d.prezzoMode === 'righe' ? moneyFld('Prezzo pagato (€)', `righe.${i}.prezzo`, r.prezzo) : ''}
+    </div>
+    <label class="fld"><span>Note oggetto <small>facoltative</small></span><input data-bind="righe.${i}.note" value="${esc(r.note)}" autocomplete="off"></label>
+  </div>`;
+}
+function righeHtml(d) {
+  const m = metalsOf(d.metalMode);
+  return `<h2>Oggetti</h2>${d.righe.map((r, i) => rigaHtml(r, i, d)).join('')}
+    <div class="add-row">${m.includes('oro') ? `<button class="btn ghost" data-act="riga-add" data-arg="oro">${ICON.plus}Aggiungi oggetto in oro</button>` : ''}${m.includes('argento') ? `<button class="btn ghost" data-act="riga-add" data-arg="argento">${ICON.plus}Aggiungi oggetto in argento</button>` : ''}</div>`;
+}
+function draftCalc(d) {
+  let incompleto = false;
+  const val = (v) => { const c = Core.toCents(v); if (c == null || c !== c) { incompleto = true; return 0; } return c; };
+  const valmax = d.valmaxMode === 'atto' ? val(d.valmaxAtto) : d.righe.reduce((s, r) => s + val(r.valmax), 0);
+  const prezzo = d.prezzoMode === 'atto' ? val(d.prezzoAtto) : d.righe.reduce((s, r) => s + val(r.prezzo), 0);
+  const rate = d.id ? d.ratePct : S.settings.ratePct;
+  const utile = valmax - prezzo, provv = Core.provvOf(utile, rate);
+  const coef = Core.coefForMonth(S.settings.coefHistory, (d.date || curYm()).slice(0, 7));
+  return { valmax, prezzo, utile, provv, net: coef ? Core.netOf(provv, coef) : null, incompleto, rate };
+}
+function summaryHtml() {
+  const c = draftCalc(S.draft);
+  return `<div class="sumgrid"><div><span>Valmax</span><b>${esc(E(c.valmax))}</b></div><div><span>Pagato</span><b>${esc(E(c.prezzo))}</b></div><div><span>Utile lordo</span><b class="${cls(c.utile)}" id="sum-utile">${esc(E(c.utile))}</b></div><div class="provv"><span>Provv. ${esc(Core.rateLabel(c.rate))}</span><b id="sum-provv">${esc(E(c.provv))}</b></div></div>
+    <div class="sumnote">${c.incompleto ? 'Valori economici incompleti. ' : ''}${c.net != null ? `Netto stimato ${esc(E(c.net))}` : 'Netto stimato disponibile dopo la prima chiusura mensile'}</div>`;
+}
+function formThumbsHtml() {
+  const p = S.draft.photos;
+  const ex = p.existing.filter(x => !p.del.has(x.id)).map(x => `<div class="thumb"><button class="thumb" style="width:100%;height:100%" data-act="pv-form" data-arg="e|${x.id}" aria-label="Apri foto"><img src="${x.url}" alt=""></button><button class="x" data-act="photo-rm" data-arg="e|${x.id}" aria-label="Rimuovi foto">×</button></div>`);
+  const ad = p.add.map(x => `<div class="thumb"><button class="thumb" style="width:100%;height:100%" data-act="pv-form" data-arg="a|${x.key}" aria-label="Apri foto"><img src="${x.url}" alt=""></button><button class="x" data-act="photo-rm" data-arg="a|${x.key}" aria-label="Rimuovi foto">×</button></div>`);
+  return ex.concat(ad).join('');
+}
+function formHtml() {
+  const d = S.draft, isNew = !d.id, m = metalsOf(d.metalMode);
+  return `<header class="top"><div class="top-in bar"><button class="link" data-act="form-cancel">Annulla</button><span class="bar-title">${isNew ? 'Nuovo atto' : 'Modifica atto'}</span><span class="punch sm" id="f-number">${d.number}</span></div></header>
+  <main class="wrap form">
+    <section class="fsec" style="padding-top:6px">
+      <h2>Conferimento</h2>
+      <div class="grid2">
+        <label class="fld"><span>Data</span><input type="date" data-bind="date" value="${esc(d.date)}"></label>
+        <label class="fld"><span>Ora</span><input type="time" data-bind="time" value="${esc(d.time)}"></label>
+      </div>
+      ${isNew ? `<p class="hint">Il numero ${d.number} viene assegnato al salvataggio. Data e ora di registrazione si salvano in automatico; qui puoi indicare quelle effettive del conferimento.</p>`
+      : `${d.numberUnlocked ? `<label class="fld"><span>Numero atto</span><input id="f-num-input" inputmode="numeric" pattern="[0-9]*" data-bind="numberStr" value="${esc(d.numberStr != null ? d.numberStr : d.number)}"></label>` : `<div class="mode-row"><span>Numero atto ${d.number}</span><button class="link" data-act="unlock-number">Correggi numero</button></div>`}
+         <p class="hint">Registrato il ${esc(Core.isoIt(d.createdAt))}. Ultima modifica ${esc(Core.isoIt(d.updatedAt))}.</p>`}
+    </section>
+    <section class="fsec">
+      <h2>Metallo</h2>
+      <div class="seg">${[['oro', 'Oro'], ['argento', 'Argento'], ['entrambi', 'Oro e argento']].map(([k, l]) => `<button class="${d.metalMode === k ? 'on' : ''}" data-act="metal-mode" data-arg="${k}">${l}</button>`).join('')}</div>
+      ${m.includes('oro') ? `${moneyFld('Quotazione oro 24 kt (€/g) <small>facoltativa</small>', 'goldQuote', d.goldQuote)}<p class="hint">Solo riferimento del momento: non entra in Valmax, prezzo o provvigioni.</p>` : ''}
+    </section>
+    <section class="fsec">
+      <h2>Valori economici</h2>
+      <div class="mode-row"><span>Valmax</span><div class="seg sm">${[['righe', 'Per oggetto'], ['atto', 'Totale atto']].map(([k, l]) => `<button class="${d.valmaxMode === k ? 'on' : ''}" data-act="vmode" data-arg="${k}">${l}</button>`).join('')}</div></div>
+      ${d.valmaxMode === 'atto' ? moneyFld('Valmax complessivo dell’atto (€)', 'valmaxAtto', d.valmaxAtto) : ''}
+      <div class="mode-row"><span>Prezzo pagato</span><div class="seg sm">${[['righe', 'Per oggetto'], ['atto', 'Totale atto']].map(([k, l]) => `<button class="${d.prezzoMode === k ? 'on' : ''}" data-act="pmode" data-arg="${k}">${l}</button>`).join('')}</div></div>
+      ${d.prezzoMode === 'atto' ? moneyFld('Prezzo complessivo pagato (€)', 'prezzoAtto', d.prezzoAtto) : ''}
+      <p class="hint">La provvigione si calcola sempre sul risultato complessivo dell’atto.</p>
+    </section>
+    <section class="fsec" id="righe">${righeHtml(d)}</section>
+    <section class="fsec">
+      <h2>Foto</h2>
+      <div class="thumbs" id="fthumbs">${formThumbsHtml()}</div>
+      <div class="btnrow"><label class="btn ghost file">Scatta foto<input type="file" accept="image/*" capture="environment" data-file="photo-form"></label><label class="btn ghost file">Dalla libreria<input type="file" accept="image/*" multiple data-file="photo-form"></label></div>
+    </section>
+    <section class="fsec" style="border-bottom:0"><h2>Note</h2><textarea data-bind="note" rows="3" placeholder="Facoltative">${esc(d.note)}</textarea></section>
+    <div id="ferr"></div>
+  </main>
+  <div class="savebar"><div class="savebar-in"><div id="fsum">${summaryHtml()}</div><button class="btn primary big" data-act="form-save" id="btn-save">Salva atto</button></div></div>`;
+}
+function rerenderRighe() { const el = $('#righe'); if (el) el.innerHTML = righeHtml(S.draft); updateSummary(); }
+function updateSummary() { const el = $('#fsum'); if (el) el.innerHTML = summaryHtml(); }
+function rerenderForm() { const y = window.scrollY; $('#app').innerHTML = formHtml(); window.scrollTo(0, y); }
+
+function buildAtto(d) {
+  const errs = [];
+  const num = (raw, label, o) => {
+    o = o || {};
+    const v = o.money ? Core.toCents(raw) : Core.parseGrams(raw);
+    if (v === null) { if (o.req) errs.push(`${label}: campo obbligatorio.`); return null; }
+    if (v !== v || v < 0) { errs.push(`${label}: valore non valido.`); return null; }
+    return v;
+  };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date || '')) errs.push('Data del conferimento non valida.');
+  if (!/^\d{2}:\d{2}$/.test(d.time || '')) errs.push('Ora del conferimento non valida.');
+  const allowed = metalsOf(d.metalMode);
+  const rows = d.righe.filter(r => allowed.includes(r.metal));
+  if (!rows.length) errs.push('Aggiungi almeno un oggetto.');
+  if (d.metalMode === 'entrambi' && (!rows.some(r => r.metal === 'oro') || !rows.some(r => r.metal === 'argento'))) errs.push('Con “Oro e argento” serve almeno un oggetto per ciascun metallo.');
+  const cnt = { oro: 0, argento: 0 };
+  const righe = rows.map(r => {
+    cnt[r.metal]++;
+    const L = `${r.metal === 'oro' ? 'Oro' : 'Argento'}, oggetto ${cnt[r.metal]}`;
+    const peso = num(r.peso, `${L}, peso complessivo`, { req: true });
+    if (peso === 0) errs.push(`${L}: il peso deve essere maggiore di zero.`);
+    let titolo = null;
+    if (r.metal === 'argento') { titolo = r.titolo === '__custom' ? (r.titoloCustom || '').trim() : r.titolo; if (!titolo) errs.push(`${L}: indica il titolo.`); }
+    return {
+      id: r.id || uid(), metal: r.metal, desc: (r.desc || '').trim(), tipologie: r.tipologie.slice(),
+      caratura: r.metal === 'oro' ? r.caratura : null, titolo,
+      peso, quantita: num(r.quantita, `${L}, quantitativo effettivo`), scartoPreciso: num(r.scartoPreciso, `${L}, scarto preciso`), scartoIpotetico: num(r.scartoIpotetico, `${L}, scarto ipotetico`),
+      valmax: d.valmaxMode === 'righe' ? num(r.valmax, `${L}, Valmax`, { req: true, money: true }) : null,
+      prezzo: d.prezzoMode === 'righe' ? num(r.prezzo, `${L}, prezzo pagato`, { req: true, money: true }) : null,
+      note: (r.note || '').trim()
+    };
+  });
+  const atto = {
+    date: d.date, time: d.time, metalMode: d.metalMode,
+    goldQuote: allowed.includes('oro') ? num(d.goldQuote, 'Quotazione oro', { money: true }) : null,
+    valmaxMode: d.valmaxMode, valmaxAtto: d.valmaxMode === 'atto' ? num(d.valmaxAtto, 'Valmax complessivo', { req: true, money: true }) : null,
+    prezzoMode: d.prezzoMode, prezzoAtto: d.prezzoMode === 'atto' ? num(d.prezzoAtto, 'Prezzo complessivo pagato', { req: true, money: true }) : null,
+    note: (d.note || '').trim(), righe
+  };
+  return { errs, atto };
+}
+function diffAtti(o, n, photoDelta) {
+  const ch = [], co = Core.calcAtto(o), cn = Core.calcAtto(n);
+  const add = (campo, a, b) => { if (a !== b) ch.push({ campo, da: a, a: b }); };
+  add('Numero', String(o.number), String(n.number));
+  add('Data conferimento', `${Core.dateIt(o.date)} ${o.time}`, `${Core.dateIt(n.date)} ${n.time}`);
+  add('Metalli', Core.metalSummary(o).replace(/\u00a0/g, ' '), Core.metalSummary(n).replace(/\u00a0/g, ' '));
+  add('Quotazione oro', o.goldQuote == null ? null : E(o.goldQuote), n.goldQuote == null ? null : E(n.goldQuote));
+  add('Valmax', E(co.valmax), E(cn.valmax));
+  add('Prezzo pagato', E(co.prezzo), E(cn.prezzo));
+  add('Utile lordo', E(co.utile), E(cn.utile));
+  add('Provvigione lorda', E(co.provv), E(cn.provv));
+  const strip = rs => JSON.stringify(rs.map(r => Object.assign({}, r, { id: 0 })));
+  if (strip(o.righe) !== strip(n.righe)) ch.push({ campo: 'Dettaglio oggetti aggiornato', da: null, a: null });
+  if ((o.note || '') !== (n.note || '')) ch.push({ campo: 'Note aggiornate', da: null, a: null });
+  if (photoDelta.add) ch.push({ campo: `Foto aggiunte: ${photoDelta.add}`, da: null, a: null });
+  if (photoDelta.del) ch.push({ campo: `Foto rimosse: ${photoDelta.del}`, da: null, a: null });
+  return ch;
+}
+let saving = false;
+async function saveDraft() {
+  if (saving) return;
+  const d = S.draft;
+  const { errs, atto } = buildAtto(d);
+  let newNumber = d.number;
+  if (d.id && d.numberUnlocked) {
+    const nn = Core.parseIntStrict(d.numberStr != null ? d.numberStr : d.number);
+    if (!(nn >= 1)) errs.push('Numero atto: inserisci un numero intero maggiore di zero.');
+    else if (nn !== d.origNumber && Core.usedNumbers(S.atti.filter(a => a.id !== d.id), S.settings).has(nn)) errs.push(`Numero atto: il numero ${nn} è già assegnato a un altro atto (anche eliminato) e non può essere duplicato.`);
+    else newNumber = nn;
+  }
+  const box = $('#ferr');
+  if (errs.length) {
+    box.innerHTML = `<div class="err-box" role="alert"><b>Per salvare correggi:</b><ul>${errs.map(e => `<li>${esc(e)}</li>`).join('')}</ul></div>`;
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  box.innerHTML = '';
+  if (d.id && newNumber !== d.origNumber) {
+    const ok = await confirmBox('Cambiare il numero dell’atto?', `L’atto N. ${d.origNumber} diventerà N. ${newNumber}. La modifica resta nello storico.`, 'Cambia numero');
+    if (!ok) return;
+  }
+  saving = true;
+  try {
+    const t = nowIso();
+    const settings = Object.assign({}, S.settings, { dataChangedAt: t });
+    let rec;
+    if (!d.id) {
+      const number = Core.nextAvailable(S.atti, S.settings);
+      rec = Object.assign({ id: uid(), number, createdAt: t, updatedAt: t, ratePct: S.settings.ratePct, deletedAt: null, history: [{ at: t, kind: 'creato', changes: [] }] }, atto);
+      settings.nextNumber = number + 1;
+    } else {
+      const old = S.atti.find(a => a.id === d.id);
+      rec = Object.assign({}, old, atto, { number: newNumber, updatedAt: t });
+      const ch = diffAtti(old, rec, { add: d.photos.add.length, del: d.photos.del.size });
+      rec.history = (old.history || []).concat([{ at: t, kind: 'modificato', changes: ch }]);
+      if (rec.number >= settings.nextNumber) settings.nextNumber = rec.number + 1;
+    }
+    const adds = d.photos.add.map((p, i) => ({ id: uid(), attoId: rec.id, type: p.rec.type, buf: p.rec.buf, w: p.rec.w, h: p.rec.h, createdAt: new Date(Date.now() + i).toISOString() }));
+    const dels = [...d.photos.del];
+    await IDB.run(['atti', 'photos', 'kv'], tx => {
+      tx.objectStore('atti').put(rec);
+      for (const p of adds) tx.objectStore('photos').put(p);
+      for (const id of dels) tx.objectStore('photos').delete(id);
+      tx.objectStore('kv').put(settings, 'settings');
+    });
+    S.settings = settings;
+    const idx = S.atti.findIndex(a => a.id === rec.id);
+    if (idx >= 0) S.atti[idx] = rec; else S.atti.push(rec);
+    for (const p of d.photos.add) freeSrc(p.url);
+    S.draft = null;
+    toast(`Atto N. ${rec.number} salvato`);
+    if (!d.id) S.from = ['home', 'archive', 'reports'].includes(S.formFrom) ? S.formFrom : 'archive';
+    go('detail', rec.id);
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = `<div class="err-box" role="alert">Salvataggio non riuscito: ${esc(e.message || e)}. I dati inseriti sono ancora qui: riprova.</div>`;
+  } finally { saving = false; }
+}
+async function openForm(id) {
+  if (id) {
+    const a = S.atti.find(x => x.id === id);
+    S.draft = draftFromAtto(a);
+    const ps = (await IDB.photosOf(id)).sort((x, y) => (x.createdAt < y.createdAt ? -1 : 1));
+    S.draft.photos.existing = await Promise.all(ps.map(async p => ({ id: p.id, url: await photoSrc(p) })));
+  } else S.draft = draftNew();
+  S.formFrom = S.view;
+  go('form');
+}
+
+/* ===================== REPORT ===================== */
+function qBox(label, mk, val, sub, key, id) {
+  return `<div class="q ${key ? 'key' : ''}"><div class="ql"><span class="mk ${mk}"></span>${label}</div><div class="qv fig ${mk === 'utl' ? cls(val) : ''}" ${id ? `id="${id}"` : ''}>${val == null ? '—' : esc(E(val))}</div><div class="qs">${sub}</div></div>`;
+}
+function deltaLine(label, cur, prev) {
+  const d = cur - prev, p = prev ? d / Math.abs(prev) * 100 : null;
+  return `<span>${label}</span><b class="${cls(d)}">${esc(Core.fmtEurSigned(d))}${p != null ? ` (${esc(Core.fmtPctSigned(p, 1))})` : ''}</b>`;
+}
+function groupsTable(g) {
+  const rows = [['Solo oro', g.oro], ['Solo argento', g.argento], ['Oro e argento', g.misto]];
+  const t = { n: 0, valmax: 0, prezzo: 0, utile: 0, provv: 0 };
+  for (const [, x] of rows) for (const k in t) t[k] += x[k];
+  return `<div class="tscroll"><table class="t wide"><thead><tr><th>Atti</th><th>N.</th><th>Valmax</th><th>Pagato</th><th>Utile lordo</th><th>Provvigioni</th></tr></thead><tbody>
+    ${rows.map(([l, x]) => `<tr><td>${l}</td><td>${x.n}</td><td>${esc(E(x.valmax))}</td><td>${esc(E(x.prezzo))}</td><td class="${cls(x.utile)}">${esc(E(x.utile))}</td><td>${esc(E(x.provv))}</td></tr>`).join('')}
+    <tr class="tot"><td>Totale</td><td>${t.n}</td><td>${esc(E(t.valmax))}</td><td>${esc(E(t.prezzo))}</td><td>${esc(E(t.utile))}</td><td>${esc(E(t.provv))}</td></tr></tbody></table></div>
+    <p class="hint">Negli atti con oro e argento la provvigione è calcolata sul totale dell’atto, quindi resta in una riga a sé e non viene ripartita tra i metalli.</p>`;
+}
+function gramsHtml(grams, gt) {
+  const block = (metal, label, lab) => {
+    const keys = Object.keys(grams[metal]).sort((a, b) => (parseFloat(b) || 0) - (parseFloat(a) || 0));
+    if (!keys.length) return `<p class="hint">${label}: nessun acquisto.</p>`;
+    return `<div class="tscroll"><table class="t"><thead><tr><th>${label}</th><th>Oggetti</th><th>Peso complessivo</th><th>Effettivo dichiarato</th></tr></thead><tbody>
+      ${keys.map(k => { const e = grams[metal][k]; return `<tr><td>${esc(lab(k))}</td><td>${e.righe}</td><td>${esc(Core.fmtG(e.peso))}</td><td>${e.conQuantita ? esc(Core.fmtG(e.quantita)) + (e.conQuantita < e.righe ? ` (${e.conQuantita} su ${e.righe})` : '') : '—'}</td></tr>`; }).join('')}
+      <tr class="tot"><td>Totale</td><td></td><td id="g-${metal}">${esc(Core.fmtG(gt[metal].peso))}</td><td>${gt[metal].conQuantita ? esc(Core.fmtG(gt[metal].quantita)) : '—'}</td></tr></tbody></table></div>`;
+  };
+  return block('oro', 'Oro', k => Core.caratLabel(k)) + block('argento', 'Argento', k => Core.titoloLabel(k)) + `<p class="hint">L’effettivo dichiarato somma solo i quantitativi che hai inserito: l’app non stima il fino.</p>`;
+}
+function reconHtml(mr) {
+  const cl = mr.closing, r = mr.recon;
+  if (!cl || (cl.aziendaUtile == null && cl.aziendaProvv == null && cl.nettoIncassato == null)) return '';
+  const blk = (title, a, b, la, lb, d, p) => `<div class="rb"><h4>${title}</h4><div class="rl"><span>${la}</span><b>${esc(E(a))}</b></div><div class="rl"><span>${lb}</span><b>${esc(E(b))}</b></div><div class="rl"><span>Differenza</span><b class="${cls(d)}">${esc(Core.fmtEurSigned(d))} (${esc(Core.fmtPctSigned(p))})</b></div></div>`;
+  let h = '<div class="recon" id="recon">';
+  if (cl.aziendaUtile != null) h += blk('Utile lordo', mr.tot.utile, cl.aziendaUtile, 'Calcolato dall’app', 'Riconosciuto dall’azienda', r.dUtile, r.pUtile);
+  if (cl.aziendaProvv != null) h += blk('Provvigioni lorde', mr.tot.provv, cl.aziendaProvv, 'Calcolate dall’app', 'Riconosciute dall’azienda', r.dProvv, r.pProvv);
+  if (r.dAtteso != null) h += `<div class="rb"><h4>Verifica del ${esc(Core.rateLabel(S.settings.ratePct))} sull’utile riconosciuto</h4><div class="rl"><span>Atteso</span><b>${esc(E(r.attesoDaAzienda))}</b></div><div class="rl"><span>Riconosciuto</span><b>${esc(E(cl.aziendaProvv))}</b></div><div class="rl"><span>Differenza</span><b class="${cls(r.dAtteso)}">${esc(Core.fmtEurSigned(r.dAtteso))}</b></div></div>`;
+  if (cl.nettoIncassato != null && mr.netStim != null) h += blk('Provvigioni nette', mr.netStim, cl.nettoIncassato, 'Stimate', 'Incassate', r.dNetto, r.pNetto);
+  if (cl.note) h += `<div class="rb"><h4>Note sulle discrepanze</h4><div class="note-box">${esc(cl.note)}</div></div>`;
+  return h + '</div>';
+}
+function closingHtml(mr) {
+  const ym = mr.ym, cl = mr.closing || {}, hasCoef = (S.settings.coefHistory || []).length > 0;
+  const setup = hasCoef ? '' : `<div class="setup" id="coef-setup">
+      <h3>Prima chiusura: coefficiente netto</h3>
+      <p>Te lo chiedo una sola volta. Inserisci lordo e netto della tua prima liquidazione effettiva: il rapporto diventa il coefficiente netto effettivo di riferimento e verrà applicato in automatico a tutte le stime, senza richiederlo nei mesi successivi.</p>
+      <div class="grid2">
+        <label class="fld"><span>Provvigione lorda riconosciuta (€)</span><input id="cs-gross" inputmode="decimal" placeholder="0,00" data-coefprev autocomplete="off"></label>
+        <label class="fld"><span>Provvigione netta ricevuta (€)</span><input id="cs-net" inputmode="decimal" placeholder="0,00" data-coefprev autocomplete="off"></label>
+      </div>
+      <div class="preview" id="cs-prev"></div>
+      <div class="sh-err" id="cs-err" hidden></div>
+      <button class="btn primary" style="margin-top:12px" data-act="coef-setup" data-arg="${ym}">Salva coefficiente</button>
+    </div>`;
+  return `<section class="sec" id="closing">
+    <h2>Chiusura e riconciliazione</h2>
+    <p class="hint" style="margin-top:2px">Confronta i tuoi dati con quelli riconosciuti dall’azienda per ${Core.monthLabel(ym).toLowerCase()}.</p>
+    ${setup}
+    <div class="grid2">
+      ${moneyFld('Utile lordo riconosciuto (€)', '', Core.centsPlain(cl.aziendaUtile), 'cl-aziendaUtile').replace(' data-bind=""', '')}
+      ${moneyFld('Provvigioni lorde riconosciute (€)', '', Core.centsPlain(cl.aziendaProvv), 'cl-aziendaProvv').replace(' data-bind=""', '')}
+    </div>
+    ${moneyFld('Provvigione netta incassata (€) <small>facoltativa, quando la ricevi</small>', '', Core.centsPlain(cl.nettoIncassato), 'cl-nettoIncassato').replace(' data-bind=""', '')}
+    <label class="fld"><span>Note sulle discrepanze</span><textarea id="cl-note" rows="2">${esc(cl.note || '')}</textarea></label>
+    <div class="sh-err" id="cl-err" hidden></div>
+    <button class="btn ghost" style="margin-top:12px" data-act="close-save" data-arg="${ym}">Salva chiusura</button>
+    ${reconHtml(mr)}
+  </section>`;
+}
+function monthReportHtml(ym) {
+  const mr = Core.monthReport(S.atti, ym, S.settings, S.closings);
+  const pv = Core.monthReport(S.atti, Core.addMonths(ym, -1), S.settings, S.closings);
+  const cl = mr.closing || {};
+  return `<div class="pager"><button class="pg" data-act="r-month" data-arg="-1" aria-label="Mese precedente">‹</button><div class="pg-title">${Core.monthLabel(ym)}<small>${mr.tot.n} ${mr.tot.n === 1 ? 'atto' : 'atti'}</small></div><button class="pg" data-act="r-month" data-arg="1" aria-label="Mese successivo">›</button></div>
+    <div class="quad">
+      ${qBox('Utile lordo generato', 'utl', mr.tot.utile, 'Valmax meno prezzo pagato', false, 'r-utile')}
+      ${qBox('Provvigioni lorde', 'mat', mr.tot.provv, `${esc(Core.rateLabel(S.settings.ratePct))} dell’utile positivo di ogni atto`, false, 'r-provv')}
+      ${qBox('Nette stimate', 'sti', mr.netStim, mr.coef ? `Coefficiente ${esc(Core.fmtPct(Core.coefPct(mr.coef)))}` : 'Coefficiente da configurare', true, 'r-net')}
+      ${qBox('Nette incassate', 'inc', cl.nettoIncassato != null ? cl.nettoIncassato : null, cl.nettoIncassato != null ? 'Importo registrato' : 'Non registrato', false, 'r-inc')}
+    </div>
+    <section class="sec"><h2>Rispetto a ${Core.monthLabel(pv.ym).toLowerCase()}</h2><div class="delta">${deltaLine('Utile lordo', mr.tot.utile, pv.tot.utile)}${deltaLine('Provvigioni lorde', mr.tot.provv, pv.tot.provv)}${mr.netStim != null && pv.netStim != null ? deltaLine('Nette stimate', mr.netStim, pv.netStim) : ''}<span>Atti</span><b>${mr.tot.n - pv.tot.n > 0 ? '+' : ''}${mr.tot.n - pv.tot.n}</b></div></section>
+    <section class="sec"><h2>Riepilogo</h2><dl class="kv">
+      <dt>Numero atti</dt><dd id="r-n">${mr.tot.n}</dd>
+      <dt>Valmax complessivo</dt><dd id="r-valmax">${esc(E(mr.tot.valmax))}</dd>
+      <dt>Totale effettivamente pagato</dt><dd id="r-pagato">${esc(E(mr.tot.prezzo))}</dd>
+      <dt>Utile lordo complessivo</dt><dd class="${cls(mr.tot.utile)}">${esc(E(mr.tot.utile))}</dd>
+      <dt>Provvigioni lorde maturate</dt><dd>${esc(E(mr.tot.provv))}</dd>
+    </dl></section>
+    <section class="sec"><h2>Oro e argento</h2>${groupsTable(mr.groups)}</section>
+    <section class="sec"><h2>Quantitativi acquistati</h2>${gramsHtml(mr.grams, mr.gramsTot)}</section>
+    ${closingHtml(mr)}
+    <section class="sec"><h2>Atti del mese</h2>${mr.list.length ? `<ul class="alist">${mr.list.slice().reverse().map(attoRowHtml).join('')}</ul>` : '<p class="hint">Nessun atto registrato in questo mese.</p>'}</section>
+    <div class="stack noprint" style="margin-top:22px"><button class="btn ghost" data-act="exp-report" data-arg="m|${ym}">Esporta report stampabile</button>${ENV.viewer ? '' : '<button class="btn ghost" data-act="print">Stampa o salva in PDF</button>'}</div>`;
+}
+function yearReportHtml(year) {
+  const yr = Core.yearReport(S.atti, String(year), S.settings, S.closings);
+  const py = Core.yearReport(S.atti, String(year - 1), S.settings, S.closings);
+  const cy = curYm();
+  const pts = yr.months.map(m => ({ ym: m.ym, val: m.netStim != null ? m.netStim : m.tot.provv, inc: m.closing && m.closing.nettoIncassato != null ? m.closing.nettoIncassato : null }));
+  return `<div class="pager"><button class="pg" data-act="r-year" data-arg="-1" aria-label="Anno precedente">‹</button><div class="pg-title">${year}<small>${yr.tot.n} ${yr.tot.n === 1 ? 'atto' : 'atti'}</small></div><button class="pg" data-act="r-year" data-arg="1" aria-label="Anno successivo">›</button></div>
+    <div class="quad">
+      ${qBox('Utile lordo generato', 'utl', yr.tot.utile, 'Somma degli atti dell’anno', false, 'y-utile')}
+      ${qBox('Provvigioni lorde', 'mat', yr.tot.provv, 'Maturate e calcolate dall’app', false, 'y-provv')}
+      ${qBox('Nette stimate', 'sti', yr.netStim, 'Somma delle stime mensili', true, 'y-net')}
+      ${qBox('Nette incassate', 'inc', yr.nIncassati ? yr.incassato : null, yr.nIncassati ? `Registrate per ${yr.nIncassati} ${yr.nIncassati === 1 ? 'mese' : 'mesi'}` : 'Nessun incasso registrato', false, 'y-inc')}
+    </div>
+    <p class="hint">Riconosciute dall’azienda: ${yr.nRiconProvv ? `${esc(E(yr.riconProvv))} di provvigioni lorde su ${yr.nRiconProvv} ${yr.nRiconProvv === 1 ? 'mese' : 'mesi'}` : 'nessuna chiusura registrata'}. Stime e incassi restano sempre separati.</p>
+    <section class="sec"><h2>Rispetto al ${year - 1}</h2><div class="delta">${deltaLine('Utile lordo', yr.tot.utile, py.tot.utile)}${deltaLine('Provvigioni lorde', yr.tot.provv, py.tot.provv)}${yr.netStim != null && py.netStim != null ? deltaLine('Nette stimate', yr.netStim, py.netStim) : ''}<span>Atti</span><b>${yr.tot.n - py.tot.n > 0 ? '+' : ''}${yr.tot.n - py.tot.n}</b></div></section>
+    <section class="sec chart"><h2>Mese per mese</h2><div class="legend"><span><i class="mk sti" style="border-radius:2px"></i>${yr.netStim != null ? 'Netto stimato' : 'Provvigioni lorde'}</span><span><i class="mk inc" style="height:3px;width:14px"></i>Netto incassato</span></div>${chartSvg(pts, yr.netStim != null ? 'net' : 'gross', yr.months.findIndex(m => m.ym === cy))}
+      <div class="tscroll"><table class="t wide"><thead><tr><th>Mese</th><th>Atti</th><th>Utile lordo</th><th>Provv. lorde</th><th>Nette stimate</th><th>Riconosciute</th><th>Incassate</th></tr></thead><tbody>
+      ${yr.months.map(m => `<tr class="clickable ${m.ym === cy ? 'cur' : ''}" data-act="r-open-month" data-arg="${m.ym}"><td>${Core.monthName(m.ym.slice(5))}</td><td>${m.tot.n}</td><td class="${cls(m.tot.utile)}">${esc(E(m.tot.utile))}</td><td>${esc(E(m.tot.provv))}</td><td>${m.netStim != null ? esc(E(m.netStim)) : '—'}</td><td>${m.closing && m.closing.aziendaProvv != null ? esc(E(m.closing.aziendaProvv)) : '—'}</td><td>${m.closing && m.closing.nettoIncassato != null ? esc(E(m.closing.nettoIncassato)) : '—'}</td></tr>`).join('')}
+      <tr class="tot"><td>Totale</td><td>${yr.tot.n}</td><td>${esc(E(yr.tot.utile))}</td><td>${esc(E(yr.tot.provv))}</td><td>${yr.netStim != null ? esc(E(yr.netStim)) : '—'}</td><td>${yr.nRiconProvv ? esc(E(yr.riconProvv)) : '—'}</td><td>${yr.nIncassati ? esc(E(yr.incassato)) : '—'}</td></tr></tbody></table></div>
+    </section>
+    <section class="sec"><h2>Riepilogo</h2><dl class="kv"><dt>Valmax complessivo</dt><dd>${esc(E(yr.tot.valmax))}</dd><dt>Totale effettivamente pagato</dt><dd>${esc(E(yr.tot.prezzo))}</dd><dt>Utile riconosciuto dall’azienda</dt><dd>${yr.nRiconUtile ? esc(E(yr.riconUtile)) : '—'}</dd></dl></section>
+    <section class="sec"><h2>Oro e argento</h2>${groupsTable(yr.groups)}</section>
+    <section class="sec"><h2>Quantitativi acquistati</h2>${gramsHtml(yr.grams, yr.gramsTot)}</section>
+    <div class="stack noprint" style="margin-top:22px"><button class="btn ghost" data-act="exp-report" data-arg="y|${year}">Esporta report stampabile</button>${ENV.viewer ? '' : '<button class="btn ghost" data-act="print">Stampa o salva in PDF</button>'}</div>`;
+}
+function reportsHtml() {
+  return `<header class="top"><div class="top-in" style="flex-direction:column;align-items:stretch;gap:8px"><h1>Report</h1>
+    <div class="seg sm noprint" style="margin:0">${[['mese', 'Mensile'], ['anno', 'Annuale']].map(([k, l]) => `<button class="${S.rTab === k ? 'on' : ''}" data-act="r-tab" data-arg="${k}">${l}</button>`).join('')}</div></div></header>
+    <main class="wrap">${S.rTab === 'mese' ? monthReportHtml(S.rYm) : yearReportHtml(S.rYear)}</main>`;
+}
+
+/* ===================== IMPOSTAZIONI ===================== */
+function coefHistHtml() {
+  const h = (S.settings.coefHistory || []).slice().sort((a, b) => a.from < b.from ? 1 : -1);
+  if (!h.length) return '';
+  return `<ul class="hist">${h.map(c => `<li><time>Dal ${Core.monthLabel(c.from).toLowerCase()}, salvato il ${esc(Core.isoIt(c.savedAt))}</time>${esc(Core.fmtPct(Core.coefPct(c), 2))} ${c.source === 'rilevazione' ? `ricavato dalla prima liquidazione (lordo ${esc(E(c.den))}, netto ${esc(E(c.num))})` : c.gross != null ? `ricavato da lordo ${esc(E(c.gross))} e netto ${esc(E(c.net))}` : 'inserito manualmente'}</li>`).join('')}</ul>`;
+}
+function settingsHtml() {
+  const st = S.settings, coef = Core.coefForMonth(st.coefHistory, curYm());
+  const nDel = S.atti.filter(a => a.deletedAt).length;
+  return `<header class="top"><div class="top-in"><h1>Impostazioni</h1></div></header>
+  <main class="wrap">
+    <section class="sec" style="margin-top:6px"><h2>Numerazione</h2>
+      <div class="srow"><span class="sl">Prossimo atto<small>Numero iniziale impostato: ${st.startNumber}</small></span><span class="punch sm" id="s-next">${Core.nextAvailable(S.atti, st)}</span></div>
+      <button class="btn ghost" style="margin-top:12px" data-act="set-next">Correggi numerazione</button>
+    </section>
+    <section class="sec"><h2>Provvigione</h2>
+      <div class="srow"><span class="sl">Percentuale sull’utile lordo<small>Si applica ai nuovi atti; quelli già registrati conservano la propria</small></span><span class="sv">${esc(Core.rateLabel(st.ratePct))}</span></div>
+      <button class="btn ghost" style="margin-top:12px" data-act="set-rate">Modifica percentuale</button>
+    </section>
+    <section class="sec"><h2>Coefficiente netto effettivo di riferimento</h2>
+      <div class="srow"><span class="sl">${coef ? 'In vigore questo mese' : 'Non ancora configurato'}<small>${coef ? `Trattenuta osservata ${esc(Core.fmtPct(100 - Core.coefPct(coef)))}. È una stima empirica dalle tue liquidazioni, non un’aliquota fiscale.` : 'Lo imposti una sola volta alla prima chiusura mensile, nella sezione Report.'}</small></span><span class="sv" id="s-coef">${coef ? esc(Core.fmtPct(Core.coefPct(coef))) : '—'}</span></div>
+      ${coefHistHtml()}
+      ${coef ? `<button class="btn ghost" style="margin-top:12px" data-act="set-coef">Modifica coefficiente</button><p class="hint">Da usare solo se cambiano le condizioni retributive: i mesi precedenti mantengono il coefficiente in vigore allora.</p>` : `<button class="btn ghost" style="margin-top:12px" data-act="go-close">Vai alla prima chiusura</button>`}
+    </section>
+    <section class="sec"><h2>Titoli dell’argento</h2>
+      <div class="chips" style="margin-top:10px">${st.silverTitles.map((t, i) => `<button class="chip on" data-act="title-del" data-arg="${i}" aria-label="Rimuovi ${esc(t)}">${esc(Core.titoloLabel(t))}<span class="x">×</span></button>`).join('')}</div>
+      <div class="fbar" style="margin-top:10px"><input id="new-title" placeholder="Nuovo titolo, es. 950" autocomplete="off"><button class="btn ghost small" data-act="title-add">Aggiungi</button></div>
+    </section>
+    <section class="sec"><h2>Tipologie di oggetti</h2>
+      <div class="chips" style="margin-top:10px">${st.tipologie.map((t, i) => `<button class="chip on" data-act="tip-del" data-arg="${i}" aria-label="Rimuovi ${esc(t)}">${esc(t)}<span class="x">×</span></button>`).join('')}</div>
+      <div class="fbar" style="margin-top:10px"><input id="new-tip" placeholder="Nuova tipologia" autocomplete="off"><button class="btn ghost small" data-act="tip-add">Aggiungi</button></div>
+    </section>
+    <section class="sec" id="backup"><h2>Backup e ripristino</h2>
+      <p class="hint">${st.lastBackupAt ? `Ultimo backup: ${esc(Core.isoIt(st.lastBackupAt))}${st.lastBackupPhotos ? ', con foto' : ', senza foto'}.` : 'Nessun backup esportato finora.'} Conserva il file fuori dall’iPhone (iCloud Drive, PC, email a te stesso).</p>
+      <div class="stack" style="margin-top:12px">
+        <button class="btn primary" data-act="exp-backup" data-arg="1">Esporta backup completo (JSON con foto)</button>
+        <button class="btn ghost" data-act="exp-backup" data-arg="0">Esporta backup leggero (senza foto)</button>
+        <label class="btn ghost file">Ripristina da backup<input type="file" accept=".json,application/json" data-file="restore"></label>
+      </div>
+    </section>
+    <section class="sec"><h2>Esportazioni</h2>
+      <div class="stack" style="margin-top:12px">
+        <button class="btn ghost" data-act="exp-csv" data-arg="atti">Atti in CSV</button>
+        <button class="btn ghost" data-act="exp-csv" data-arg="oggetti">Singoli oggetti in CSV</button>
+        <button class="btn ghost" data-act="exp-csv" data-arg="mensile">Riepiloghi mensili in CSV</button>
+        <button class="btn ghost" data-act="exp-csv" data-arg="annuale">Riepiloghi annuali in CSV</button>
+      </div>
+      <p class="hint">I CSV usano punto e virgola e virgola decimale: si aprono direttamente in Excel o Numbers.</p>
+    </section>
+    <section class="sec"><h2>Atti eliminati</h2>
+      <div class="srow"><span class="sl">Nel cestino<small>Restano recuperabili e i loro numeri non vengono riassegnati</small></span><span class="sv">${nDel}</span></div>
+      ${nDel ? `<button class="btn ghost" style="margin-top:12px" data-act="nav" data-arg="trash">Apri atti eliminati</button>` : ''}
+    </section>
+    <section class="sec"><h2>Dove sono i dati</h2>
+      <div class="info" id="stor-info"><p>Verifica dell’archivio in corso…</p></div>
+    </section>
+    <p class="hint" style="margin-top:28px">Registro provvigioni ${APP_VERSION}. Nessuna pubblicità, nessuna statistica, nessuna connessione esterna.</p>
+  </main>`;
+}
+async function fillStorageInfo() {
+  const box = $('#stor-info'); if (!box) return;
+  let used = '', pers = S.persisted;
+  try { if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); used = `Spazio occupato circa ${Core.fmtNum((e.usage || 0) / 1048576, 1)} MB.`; } } catch (_) {}
+  try { if (navigator.storage && navigator.storage.persisted) pers = await navigator.storage.persisted(); } catch (_) {}
+  const nPh = await IDB.req(IDB.db.transaction('photos').objectStore('photos').count()).catch(() => null);
+  if (!$('#stor-info')) return;
+  box.innerHTML = `<p>Atti, foto, chiusure e impostazioni sono salvati nel database interno del browser (IndexedDB) di questo dispositivo, solo per questa app. Nessun dato viene inviato a server esterni.</p>
+    <p>${Core.activeAtti(S.atti).length} atti attivi, ${nPh == null ? '—' : nPh} foto. ${used}</p>
+    <p>Archiviazione protetta dalla pulizia automatica: <b>${pers ? 'sì' : 'non confermata'}</b>.${pers ? '' : ' Il sistema potrebbe liberare spazio in condizioni estreme: tieni un backup recente.'}</p>
+    <p>Se elimini l’app dalla schermata Home o cancelli i dati del sito, l’archivio viene cancellato: solo il backup lo protegge.</p>`;
+}
+function trashHtml() {
+  const list = S.atti.filter(a => a.deletedAt).sort((a, b) => b.number - a.number);
+  return `<header class="top"><div class="top-in bar"><button class="link" data-act="nav" data-arg="settings">${ICON.back}Impostazioni</button><span class="bar-title">Atti eliminati</span><span style="width:60px"></span></div></header>
+  <main class="wrap">${list.length ? `<ul class="alist">${list.map(a => { const c = Core.calcAtto(a); return `<li style="padding:14px 0;border-bottom:1px solid var(--line-soft)"><div style="display:flex;gap:14px;align-items:center"><span class="punch ghost">${a.number}</span><div style="flex:1"><div>${Core.dateIt(a.date)}, ${esc(Core.metalSummary(a))}</div><div class="hint" style="margin:2px 0 0">Eliminato il ${esc(Core.isoIt(a.deletedAt))}. Utile ${esc(E(c.utile))}</div></div></div><div class="btnrow"><button class="btn ghost small" style="width:100%" data-act="trash-restore" data-arg="${a.id}">Ripristina</button><button class="btn danger small" style="width:100%" data-act="trash-purge" data-arg="${a.id}">Elimina per sempre</button></div></li>`; }).join('')}</ul>` : '<div class="empty"><p>Il cestino è vuoto.</p></div>'}</main>`;
+}
+
+/* ===================== FILE: ESPORTAZIONE E RIPRISTINO ===================== */
+let downloadsP = null;
+function getDownloads() {
+  if (!ENV.viewer) return Promise.resolve(null);
+  if (!downloadsP) downloadsP = window.claude.use('downloads').catch(() => null);
+  return downloadsP;
+}
+const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+async function saveFile(filename, data, mime) {
+  const blob = data instanceof Blob ? data : new Blob([data], { type: mime });
+  const dl = await getDownloads();
+  if (dl) {
+    try { await dl.save({ filename, data: blob }); toast('File pronto: ' + filename); return true; }
+    catch (e) { toast(e && e.code === 'declined' ? 'Salvataggio annullato' : 'Salvataggio non riuscito: ' + ((e && (e.message || e.code)) || 'errore')); return false; }
+  }
+  if (isIOS() && navigator.canShare) {
+    try {
+      const f = new File([blob], filename, { type: mime });
+      if (navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: filename }); return true; }
+    } catch (e) { if (e && e.name === 'AbortError') { toast('Condivisione annullata'); return false; } }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = filename; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  toast('File scaricato: ' + filename);
+  return true;
+}
+function bufToB64(buf) {
+  const bytes = new Uint8Array(buf); let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+function b64ToBuf(b64) { const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; }
+const stamp = () => Core.romeParts().date;
+async function exportBackup(withPhotos) {
+  toast('Preparo il backup…', 6000);
+  const photos = withPhotos ? await IDB.getAll('photos') : [];
+  const obj = {
+    app: 'registro-provvigioni', format: 1, appVersion: APP_VERSION, exportedAt: nowIso(), includesPhotos: !!withPhotos,
+    counts: { atti: S.atti.length, attiAttivi: Core.activeAtti(S.atti).length, chiusure: Object.keys(S.closings).length, foto: photos.length },
+    settings: S.settings, atti: S.atti, closings: Object.values(S.closings),
+    photos: photos.map(p => ({ id: p.id, attoId: p.attoId, type: p.type, w: p.w, h: p.h, createdAt: p.createdAt, data: bufToB64(p.buf) }))
+  };
+  const ok = await saveFile(`backup-provvigioni-${stamp()}${withPhotos ? '' : '-senza-foto'}.json`, new Blob([JSON.stringify(obj)], { type: 'application/json' }), 'application/json');
+  if (ok) { await putSettings(Object.assign({}, S.settings, { lastBackupAt: nowIso(), lastBackupPhotos: !!withPhotos })); if (S.view === 'settings') render(); }
+}
+function validateBackup(o) {
+  if (!o || o.app !== 'registro-provvigioni' || !Array.isArray(o.atti) || !o.settings || typeof o.settings !== 'object') return 'Il file non è un backup del Registro provvigioni.';
+  const seen = new Set();
+  for (const a of o.atti) {
+    if (!a || typeof a.id !== 'string' || !Number.isInteger(a.number) || !/^\d{4}-\d{2}-\d{2}$/.test(a.date || '') || !Array.isArray(a.righe)) return 'Il backup contiene atti incompleti o danneggiati.';
+    if (seen.has(a.number)) return `Il backup contiene due atti con il numero ${a.number}: ripristino bloccato per evitare duplicati.`;
+    seen.add(a.number);
+  }
+  if (o.closings && !Array.isArray(o.closings)) return 'Le chiusure mensili nel backup non sono leggibili.';
+  if (o.photos && !Array.isArray(o.photos)) return 'Le foto nel backup non sono leggibili.';
+  if (!Number.isInteger(o.settings.nextNumber)) return 'Nel backup manca la numerazione.';
+  return null;
+}
+async function restoreFromFile(file) {
+  let o;
+  try { o = JSON.parse(await file.text()); } catch (e) { await modal({ title: 'Ripristino non possibile', body: '<p>Il file selezionato non è un JSON leggibile.</p>' }); return; }
+  const err = validateBackup(o);
+  if (err) { await modal({ title: 'Ripristino non possibile', body: `<p>${esc(err)}</p>` }); return; }
+  const coefN = (o.settings.coefHistory || []).length;
+  const ok = await modal({
+    title: 'Ripristinare questo backup?',
+    body: `<p>Backup del ${esc(Core.isoIt(o.exportedAt))}: ${o.atti.filter(a => !a.deletedAt).length} atti, ${(o.closings || []).length} chiusure, ${o.includesPhotos ? (o.photos || []).length + ' foto' : 'senza foto (le foto attuali degli stessi atti restano)'}, coefficiente ${coefN ? 'presente' : 'non configurato'}, prossimo atto N. ${o.settings.nextNumber}.</p><p>I dati attualmente nell’app verranno sostituiti. Se non sei sicuro, esporta prima un backup dei dati attuali.</p>`,
+    actions: [{ label: 'Sostituisci con il backup', value: true, kind: 'danger' }, { label: 'Esporta prima i dati attuali', value: 'export', kind: 'ghost' }, { label: 'Annulla', value: false, kind: 'ghost' }]
+  });
+  if (ok === 'export') { await exportBackup(true); return; }
+  if (ok !== true) return;
+  try {
+    const settings = Object.assign(defaultSettings(), o.settings);
+    const atti = o.atti, ids = new Set(atti.map(a => a.id));
+    const photos = o.includesPhotos ? (o.photos || []).filter(p => ids.has(p.attoId)).map(p => ({ id: p.id, attoId: p.attoId, type: p.type, w: p.w, h: p.h, createdAt: p.createdAt, buf: b64ToBuf(p.data) })) : null;
+    const keepIds = photos ? null : (await IDB.getAll('photos')).filter(p => !ids.has(p.attoId)).map(p => p.id);
+    await IDB.run(['kv', 'atti', 'photos', 'closings'], tx => {
+      tx.objectStore('kv').clear(); tx.objectStore('atti').clear(); tx.objectStore('closings').clear();
+      if (photos) { tx.objectStore('photos').clear(); for (const p of photos) tx.objectStore('photos').put(p); }
+      else for (const id of keepIds) tx.objectStore('photos').delete(id);
+      tx.objectStore('kv').put(settings, 'settings');
+      for (const a of atti) tx.objectStore('atti').put(a);
+      for (const c of (o.closings || [])) tx.objectStore('closings').put(c);
+    });
+    revokeUrls();
+    await loadAll();
+    S.filters = { q: '', day: '', month: '', year: '', metal: '', carat: '', titolo: '' };
+    go('home');
+    toast('Backup ripristinato');
+  } catch (e) {
+    console.error(e);
+    await modal({ title: 'Ripristino non riuscito', body: `<p>${esc(e.message || e)}. I dati precedenti non sono stati modificati.</p>` });
+  }
+}
+function reportDoc(kind, key) {
+  const css = 'body{font:13px/1.45 -apple-system,Segoe UI,Arial,sans-serif;color:#111;margin:28px;max-width:900px}h1{font:600 22px Georgia,serif;margin:0 0 4px}h2{font:600 15px Georgia,serif;margin:22px 0 6px}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{border-bottom:1px solid #ddd;padding:5px 6px;text-align:right;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:#555;font-weight:500}.tot td{font-weight:700;border-top:1px solid #999}.muted{color:#666}.big td:last-child{font-weight:700}';
+  const T = (head, rows) => `<table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr class="${r.cls || ''}">${r.cells.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const groups = g => T(['Atti', 'N.', 'Valmax', 'Pagato', 'Utile lordo', 'Provvigioni'], [['Solo oro', g.oro], ['Solo argento', g.argento], ['Oro e argento', g.misto]].map(([l, x]) => ({ cells: [l, x.n, E(x.valmax), E(x.prezzo), E(x.utile), E(x.provv)] })));
+  const grams = (gr) => ['oro', 'argento'].map(m => { const ks = Object.keys(gr[m]); return ks.length ? T([m === 'oro' ? 'Oro' : 'Argento', 'Oggetti', 'Peso complessivo', 'Effettivo dichiarato'], ks.map(k => ({ cells: [m === 'oro' ? Core.caratLabel(k) : Core.titoloLabel(k), gr[m][k].righe, Core.fmtG(gr[m][k].peso), gr[m][k].conQuantita ? Core.fmtG(gr[m][k].quantita) : '—'] }))) : ''; }).join('');
+  let title, body;
+  if (kind === 'm') {
+    const mr = Core.monthReport(S.atti, key, S.settings, S.closings), cl = mr.closing || {};
+    title = 'Report ' + Core.monthLabel(key);
+    body = `<h2>Risultato</h2>${T(['Voce', 'Importo'], [{ cells: ['Utile lordo generato', E(mr.tot.utile)] }, { cells: ['Provvigioni lorde', E(mr.tot.provv)] }, { cells: ['Provvigioni nette stimate' + (mr.coef ? ` (coeff. ${Core.fmtPct(Core.coefPct(mr.coef))})` : ''), mr.netStim != null ? E(mr.netStim) : '—'], cls: 'big' }, { cells: ['Provvigioni nette incassate', cl.nettoIncassato != null ? E(cl.nettoIncassato) : '—'] }])}
+      <h2>Riepilogo</h2>${T(['Voce', 'Valore'], [{ cells: ['Numero atti', mr.tot.n] }, { cells: ['Valmax complessivo', E(mr.tot.valmax)] }, { cells: ['Totale pagato', E(mr.tot.prezzo)] }])}
+      <h2>Riconciliazione con l’azienda</h2>${T(['Voce', 'App', 'Azienda', 'Differenza'], [{ cells: ['Utile lordo', E(mr.tot.utile), cl.aziendaUtile != null ? E(cl.aziendaUtile) : '—', mr.recon.dUtile != null ? Core.fmtEurSigned(mr.recon.dUtile) + ' (' + Core.fmtPctSigned(mr.recon.pUtile) + ')' : '—'] }, { cells: ['Provvigioni lorde', E(mr.tot.provv), cl.aziendaProvv != null ? E(cl.aziendaProvv) : '—', mr.recon.dProvv != null ? Core.fmtEurSigned(mr.recon.dProvv) + ' (' + Core.fmtPctSigned(mr.recon.pProvv) + ')' : '—'] }])}${cl.note ? `<p class="muted">Note: ${esc(cl.note)}</p>` : ''}
+      <h2>Oro e argento</h2>${groups(mr.groups)}<h2>Quantitativi</h2>${grams(mr.grams)}
+      <h2>Atti</h2>${T(['Atto', 'Data', 'Metalli', 'Valmax', 'Pagato', 'Utile', 'Provv.'], mr.list.map(a => { const c = Core.calcAtto(a); return { cells: ['N. ' + a.number, Core.dateIt(a.date), Core.metalSummary(a), E(c.valmax), E(c.prezzo), E(c.utile), E(c.provv)] }; }))}`;
+  } else {
+    const yr = Core.yearReport(S.atti, key, S.settings, S.closings);
+    title = 'Report anno ' + key;
+    body = `<h2>Risultato</h2>${T(['Voce', 'Importo'], [{ cells: ['Utile lordo generato', E(yr.tot.utile)] }, { cells: ['Provvigioni lorde', E(yr.tot.provv)] }, { cells: ['Provvigioni nette stimate', yr.netStim != null ? E(yr.netStim) : '—'], cls: 'big' }, { cells: ['Provvigioni nette incassate', yr.nIncassati ? E(yr.incassato) : '—'] }, { cells: ['Provvigioni riconosciute dall’azienda', yr.nRiconProvv ? E(yr.riconProvv) : '—'] }])}
+      <h2>Mese per mese</h2>${T(['Mese', 'Atti', 'Utile lordo', 'Provv. lorde', 'Nette stimate', 'Riconosciute', 'Incassate'], yr.months.map(m => ({ cells: [Core.monthName(m.ym.slice(5)), m.tot.n, E(m.tot.utile), E(m.tot.provv), m.netStim != null ? E(m.netStim) : '—', m.closing && m.closing.aziendaProvv != null ? E(m.closing.aziendaProvv) : '—', m.closing && m.closing.nettoIncassato != null ? E(m.closing.nettoIncassato) : '—'] })).concat([{ cls: 'tot', cells: ['Totale', yr.tot.n, E(yr.tot.utile), E(yr.tot.provv), yr.netStim != null ? E(yr.netStim) : '—', yr.nRiconProvv ? E(yr.riconProvv) : '—', yr.nIncassati ? E(yr.incassato) : '—'] }]))}
+      <h2>Oro e argento</h2>${groups(yr.groups)}<h2>Quantitativi</h2>${grams(yr.grams)}`;
+  }
+  return `<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(title)}</title><style>${css}</style></head><body><h1>${esc(title)}</h1><div class="muted">Registro provvigioni, generato il ${esc(Core.isoIt(nowIso()))}. Le stime nette usano il coefficiente netto effettivo di riferimento, non un’aliquota fiscale.</div>${body}</body></html>`;
+}
+
+/* ===================== AZIONI ===================== */
+const A = {
+  async 'onb-start'() {
+    const n = Core.parseIntStrict($('#onb-num').value);
+    const err = $('#onb-err');
+    if (!(n >= 1)) { err.textContent = 'Inserisci un numero intero maggiore di zero, ad esempio 347.'; err.hidden = false; return; }
+    await putSettings(Object.assign({}, S.settings, { setupDone: true, startNumber: n, nextNumber: n }));
+    go('home');
+  },
+  nav(arg, el) { if (arg === 'reports') { S.rYm = S.rYm || curYm(); } go(arg); if (el && el.dataset.scroll) setTimeout(() => { const t = document.getElementById(el.dataset.scroll); if (t) t.scrollIntoView(); }, 30); },
+  'new-atto'() { return openForm(null); },
+  open(id) { go('detail', id); },
+  back() { go(S.from || 'archive', null, { keepScroll: false }); },
+  'edit-atto'(id) { return openForm(id); },
+  async 'form-cancel'() {
+    if (S.draft && S.draft.dirty) { const ok = await confirmBox('Uscire senza salvare?', 'Le modifiche inserite andranno perse.', 'Esci senza salvare', true); if (!ok) return; }
+    const d = S.draft; S.draft = null;
+    if (d) for (const p of d.photos.add) freeSrc(p.url);
+    if (d && d.id) go('detail', d.id); else go(['home', 'archive', 'reports', 'settings'].includes(S.formFrom) ? S.formFrom : 'home');
+  },
+  'form-save'() { return saveDraft(); },
+  async 'metal-mode'(m) {
+    const d = S.draft, keep = metalsOf(m);
+    const drop = d.righe.filter(r => !keep.includes(r.metal));
+    const hasData = drop.some(r => r.peso || r.valmax || r.prezzo || r.desc || r.quantita);
+    if (hasData) { const ok = await confirmBox('Cambiare metallo?', `Gli oggetti in ${drop[0].metal} già compilati verranno rimossi dal modulo.`, 'Cambia', true); if (!ok) return; }
+    d.righe = d.righe.filter(r => keep.includes(r.metal));
+    for (const k of keep) if (!d.righe.some(r => r.metal === k)) d.righe.push(newRiga(k));
+    d.metalMode = m; d.dirty = true; rerenderForm();
+  },
+  vmode(m) { S.draft.valmaxMode = m; S.draft.dirty = true; rerenderForm(); },
+  pmode(m) { S.draft.prezzoMode = m; S.draft.dirty = true; rerenderForm(); },
+  'riga-add'(metal) { S.draft.righe.push(newRiga(metal)); S.draft.dirty = true; rerenderRighe(); const rs = document.querySelectorAll('.riga'); if (rs.length) rs[rs.length - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); },
+  async 'riga-del'(i) { const r = S.draft.righe[+i]; if ((r.peso || r.valmax || r.prezzo) && !(await confirmBox('Rimuovere questo oggetto?', 'I dati inseriti per questo oggetto andranno persi.', 'Rimuovi', true))) return; S.draft.righe.splice(+i, 1); S.draft.dirty = true; rerenderRighe(); },
+  'riga-carat'(arg) { const [i, c] = arg.split('|'); S.draft.righe[+i].caratura = c; S.draft.dirty = true; rerenderRighe(); },
+  'riga-titolo'(arg) { const [i, k] = arg.split('|'); S.draft.righe[+i].titolo = k === 'custom' ? '__custom' : S.settings.silverTitles[+k]; S.draft.dirty = true; rerenderRighe(); },
+  'riga-tip'(arg) { const [i, k] = arg.split('|'); const r = S.draft.righe[+i], t = S.settings.tipologie[+k]; r.tipologie = r.tipologie.includes(t) ? r.tipologie.filter(x => x !== t) : r.tipologie.concat([t]); S.draft.dirty = true; rerenderRighe(); },
+  async 'unlock-number'() { const ok = await confirmBox('Correggere il numero?', 'Usalo solo per rimediare a un errore. Il numero resta unico: l’app non accetta duplicati, nemmeno con gli atti eliminati.', 'Correggi'); if (!ok) return; S.draft.numberUnlocked = true; S.draft.numberStr = String(S.draft.number); rerenderForm(); const el = $('#f-num-input'); if (el) el.focus(); },
+  'photo-rm'(arg) { const [t, k] = arg.split('|'); const p = S.draft.photos; if (t === 'e') p.del.add(k); else { const x = p.add.find(y => y.key === k); if (x) freeSrc(x.url); p.add = p.add.filter(y => y.key !== k); } S.draft.dirty = true; $('#fthumbs').innerHTML = formThumbsHtml(); },
+  'pv-form'(arg) { const p = S.draft.photos; const items = p.existing.filter(x => !p.del.has(x.id)).map(x => ({ url: x.url, ref: 'e|' + x.id })).concat(p.add.map(x => ({ url: x.url, ref: 'a|' + x.key }))); const i = Math.max(0, items.findIndex(x => x.ref === arg)); photoViewer(items, i, it => A['photo-rm'](it.ref)); },
+  'pv-detail'(i) {
+    const id = S.arg, ps = S.detailPhotos || [];
+    photoViewer(ps.map(p => ({ url: S.urls.get(p.id), id: p.id })), +i, async it => {
+      const a = S.atti.find(x => x.id === id), t = nowIso();
+      const rec = Object.assign({}, a, { updatedAt: t, history: (a.history || []).concat([{ at: t, kind: 'foto', changes: [{ campo: 'Foto rimosse: 1', da: null, a: null }] }]) });
+      const settings = Object.assign({}, S.settings, { dataChangedAt: t });
+      await IDB.run(['atti', 'photos', 'kv'], tx => { tx.objectStore('photos').delete(it.id); tx.objectStore('atti').put(rec); tx.objectStore('kv').put(settings, 'settings'); });
+      S.settings = settings; S.atti[S.atti.findIndex(x => x.id === id)] = rec;
+      toast('Foto eliminata'); render();
+    });
+  },
+  async 'delete-atto'(id) {
+    const a = S.atti.find(x => x.id === id);
+    const ok = await confirmBox(`Eliminare l’atto N. ${a.number}?`, 'Esce da totali e report. Potrai recuperarlo da Impostazioni, Atti eliminati. Il numero non verrà riassegnato.', 'Elimina atto', true);
+    if (!ok) return;
+    const t = nowIso();
+    const rec = Object.assign({}, a, { deletedAt: t, updatedAt: t, history: (a.history || []).concat([{ at: t, kind: 'eliminato', changes: [] }]) });
+    const settings = Object.assign({}, S.settings, { dataChangedAt: t });
+    await IDB.run(['atti', 'kv'], tx => { tx.objectStore('atti').put(rec); tx.objectStore('kv').put(settings, 'settings'); });
+    S.settings = settings; S.atti[S.atti.findIndex(x => x.id === id)] = rec;
+    toast(`Atto N. ${a.number} eliminato`); go('archive');
+  },
+  async 'trash-restore'(id) {
+    const a = S.atti.find(x => x.id === id), t = nowIso();
+    const rec = Object.assign({}, a, { deletedAt: null, updatedAt: t, history: (a.history || []).concat([{ at: t, kind: 'ripristinato', changes: [] }]) });
+    const settings = Object.assign({}, S.settings, { dataChangedAt: t });
+    await IDB.run(['atti', 'kv'], tx => { tx.objectStore('atti').put(rec); tx.objectStore('kv').put(settings, 'settings'); });
+    S.settings = settings; S.atti[S.atti.findIndex(x => x.id === id)] = rec;
+    toast(`Atto N. ${a.number} ripristinato`); render();
+  },
+  async 'trash-purge'(id) {
+    const a = S.atti.find(x => x.id === id);
+    const ok = await confirmBox(`Eliminare per sempre l’atto N. ${a.number}?`, 'Atto e foto verranno cancellati definitivamente. Il numero resterà comunque riservato e non sarà riassegnato.', 'Elimina per sempre', true);
+    if (!ok) return;
+    const ps = await IDB.photosOf(id), t = nowIso();
+    const settings = Object.assign({}, S.settings, { dataChangedAt: t, retiredNumbers: [...new Set((S.settings.retiredNumbers || []).concat([a.number]))] });
+    await IDB.run(['atti', 'photos', 'kv'], tx => { tx.objectStore('atti').delete(id); for (const p of ps) tx.objectStore('photos').delete(p.id); tx.objectStore('kv').put(settings, 'settings'); });
+    S.settings = settings; S.atti = S.atti.filter(x => x.id !== id);
+    toast('Atto eliminato definitivamente'); render();
+  },
+  'f-toggle'() { S.showFilters = !S.showFilters; render(); },
+  'f-metal'(m) { S.filters.metal = m; render(); },
+  'f-reset'() { S.filters = { q: '', day: '', month: '', year: '', metal: '', carat: '', titolo: '' }; render(); },
+  'r-tab'(t) { S.rTab = t; render(); },
+  'r-month'(k) { S.rYm = Core.addMonths(S.rYm, +k); render(); },
+  'r-year'(k) { S.rYear += +k; render(); },
+  'r-open-month'(ym) { S.rTab = 'mese'; S.rYm = ym; render(); window.scrollTo(0, 0); },
+  'go-close'() { S.rTab = 'mese'; S.rYm = S.rYm || curYm(); go('reports'); setTimeout(() => { const c = $('#closing'); if (c) c.scrollIntoView(); }, 30); },
+  async 'coef-setup'(ym) {
+    const g = Core.toCents($('#cs-gross').value), n = Core.toCents($('#cs-net').value);
+    const r = Core.coefFromPair(g, n), err = $('#cs-err');
+    if (!r.ok) { err.textContent = r.error; err.hidden = false; return; }
+    if (r.netOverGross && !(await confirmBox('Netto superiore al lordo?', 'Il netto inserito è maggiore del lordo: il coefficiente supererebbe il 100%. Controlla gli importi prima di confermare.', 'Confermo gli importi'))) return;
+    const ok = await confirmBox('Salvare il coefficiente netto?', `Coefficiente netto effettivo di riferimento: ${Core.fmtPct(r.pct)} (trattenuta osservata ${Core.fmtPct(r.trattenuta)}). Verrà usato per tutte le stime e non ti verrà richiesto di nuovo.`, 'Salva coefficiente');
+    if (!ok) return;
+    const t = nowIso();
+    const entry = { from: ym, num: r.num, den: r.den, source: 'rilevazione', ym, savedAt: t };
+    const settings = Object.assign({}, S.settings, { coefHistory: [entry], dataChangedAt: t });
+    const prev = S.closings[ym] || { ym };
+    const closing = Object.assign({}, prev, { ym, aziendaProvv: prev.aziendaProvv != null ? prev.aziendaProvv : g, nettoIncassato: prev.nettoIncassato != null ? prev.nettoIncassato : n, updatedAt: t });
+    await IDB.run(['kv', 'closings'], tx => { tx.objectStore('kv').put(settings, 'settings'); tx.objectStore('closings').put(closing); });
+    S.settings = settings; S.closings[ym] = closing;
+    toast('Coefficiente netto salvato'); render();
+    setTimeout(() => { const c = $('#closing'); if (c) c.scrollIntoView(); }, 30);
+  },
+  async 'close-save'(ym) {
+    const err = $('#cl-err'); err.hidden = true;
+    const rd = (id, allowNeg) => { const v = Core.toCents($('#' + id).value); if (v != null && (v !== v || (!allowNeg && v < 0))) throw new Error('Importo non valido nel campo evidenziato.'); return v; };
+    let au, ap, ni;
+    try { au = rd('cl-aziendaUtile', true); ap = rd('cl-aziendaProvv'); ni = rd('cl-nettoIncassato'); }
+    catch (e) { err.textContent = e.message; err.hidden = false; return; }
+    const note = $('#cl-note').value.trim(), t = nowIso();
+    const settings = Object.assign({}, S.settings, { dataChangedAt: t });
+    if (au == null && ap == null && ni == null && !note) {
+      await IDB.run(['closings', 'kv'], tx => { tx.objectStore('closings').delete(ym); tx.objectStore('kv').put(settings, 'settings'); });
+      delete S.closings[ym];
+    } else {
+      const c = { ym, aziendaUtile: au, aziendaProvv: ap, nettoIncassato: ni, note, updatedAt: t };
+      await IDB.run(['closings', 'kv'], tx => { tx.objectStore('closings').put(c); tx.objectStore('kv').put(settings, 'settings'); });
+      S.closings[ym] = c;
+    }
+    S.settings = settings;
+    toast('Chiusura salvata'); render();
+    setTimeout(() => { const c = $('#recon') || $('#closing'); if (c) c.scrollIntoView({ block: 'start' }); }, 30);
+  },
+  async 'set-next'() {
+    const used = Core.usedNumbers(S.atti, S.settings), maxUsed = used.size ? Math.max(...used) : null;
+    const v = await modal({
+      title: 'Correggi numerazione',
+      body: `<p>Indica il numero da assegnare al prossimo atto. ${maxUsed ? `Il numero più alto già usato è ${maxUsed}.` : 'Non hai ancora registrato atti: anche il numero iniziale viene aggiornato.'}</p><label class="fld"><span>Prossimo atto</span><input id="m-next" inputmode="numeric" pattern="[0-9]*" value="${Core.nextAvailable(S.atti, S.settings)}"></label>`,
+      actions: [{ label: 'Salva numerazione', kind: 'primary', validate: ov => { const n = Core.parseIntStrict($('#m-next', ov).value); if (!(n >= 1)) return { error: 'Inserisci un numero intero maggiore di zero.' }; if (used.has(n)) return { error: `Il numero ${n} è già assegnato a un atto (anche eliminato).` }; return { n }; } }, { label: 'Annulla', value: null, kind: 'ghost' }]
+    });
+    if (!v) return;
+    if (maxUsed && v.n < maxUsed && !(await confirmBox('Numero inferiore a quelli già usati', `Dopo il ${v.n} l’app salterà automaticamente i numeri già occupati, senza mai duplicarli. Confermi?`, 'Confermo'))) return;
+    const patch = { nextNumber: v.n, dataChangedAt: nowIso() };
+    if (!Core.activeAtti(S.atti).length && !S.atti.length) patch.startNumber = v.n;
+    await putSettings(Object.assign({}, S.settings, patch));
+    toast(`Prossimo atto: N. ${Core.nextAvailable(S.atti, S.settings)}`); render();
+  },
+  async 'set-rate'() {
+    const v = await modal({
+      title: 'Percentuale di provvigione',
+      body: `<p>Si applica agli atti che registrerai da ora in poi. Gli atti già salvati mantengono la percentuale con cui sono stati registrati.</p><label class="fld"><span>Percentuale sull’utile lordo (%)</span><input id="m-rate" inputmode="decimal" value="${Core.fmtNum(S.settings.ratePct, 2, true)}"></label>`,
+      actions: [{ label: 'Salva percentuale', kind: 'primary', validate: ov => { const p = Core.parseDec($('#m-rate', ov).value); if (p == null || p !== p || p <= 0 || p > 100) return { error: 'Inserisci una percentuale maggiore di 0 e non superiore a 100.' }; return { p: Math.round(p * 100) / 100 }; } }, { label: 'Annulla', value: null, kind: 'ghost' }]
+    });
+    if (!v) return;
+    await putSettings(Object.assign({}, S.settings, { ratePct: v.p, dataChangedAt: nowIso() }));
+    toast('Percentuale aggiornata'); render();
+  },
+  async 'set-coef'() {
+    const coef = Core.coefForMonth(S.settings.coefHistory, curYm());
+    const v = await modal({
+      title: 'Modifica coefficiente netto',
+      body: `<p>Da usare solo se cambiano le condizioni retributive. Il nuovo valore vale dal mese indicato in avanti.</p>
+        <label class="fld"><span>Coefficiente netto (%)</span><input id="m-pct" inputmode="decimal" value="${coef ? Core.fmtNum(Core.coefPct(coef), 2, true) : ''}"></label>
+        <p class="hint">Oppure ricavalo da una nuova liquidazione (se compili entrambi i campi, prevalgono):</p>
+        <div class="grid2"><label class="fld"><span>Lordo (€)</span><input id="m-g" inputmode="decimal" placeholder="0,00"></label><label class="fld"><span>Netto (€)</span><input id="m-n" inputmode="decimal" placeholder="0,00"></label></div>
+        <label class="fld"><span>Valido dal mese</span><input type="month" id="m-from" value="${curYm()}"></label>`,
+      actions: [{ label: 'Salva coefficiente', kind: 'primary', validate: ov => {
+        const from = $('#m-from', ov).value; if (!/^\d{4}-\d{2}$/.test(from)) return { error: 'Indica il mese di decorrenza.' };
+        const gs = $('#m-g', ov).value.trim(), ns = $('#m-n', ov).value.trim();
+        if (gs || ns) { const r = Core.coefFromPair(Core.toCents(gs), Core.toCents(ns)); if (!r.ok) return { error: r.error }; return { from, num: r.num, den: r.den, gross: r.den, net: r.num }; }
+        const r = Core.coefFromPct(Core.parseDec($('#m-pct', ov).value)); if (!r.ok) return { error: r.error }; return { from, num: r.num, den: r.den };
+      } }, { label: 'Annulla', value: null, kind: 'ghost' }]
+    });
+    if (!v) return;
+    const t = nowIso();
+    const entry = { from: v.from, num: v.num, den: v.den, source: 'manuale', savedAt: t }; if (v.gross != null) { entry.gross = v.gross; entry.net = v.net; }
+    await putSettings(Object.assign({}, S.settings, { coefHistory: (S.settings.coefHistory || []).concat([entry]), dataChangedAt: t }));
+    toast('Coefficiente aggiornato'); render();
+  },
+  async 'title-del'(i) { const t = S.settings.silverTitles[+i]; if (!(await confirmBox(`Rimuovere il titolo ${t}?`, 'Sparisce solo dalla selezione rapida: gli atti già registrati non cambiano.', 'Rimuovi'))) return; await putSettings(Object.assign({}, S.settings, { silverTitles: S.settings.silverTitles.filter((_, k) => k !== +i) })); render(); },
+  async 'title-add'() { const v = $('#new-title').value.trim(); if (!v || S.settings.silverTitles.includes(v)) return; await putSettings(Object.assign({}, S.settings, { silverTitles: S.settings.silverTitles.concat([v]) })); render(); },
+  async 'tip-del'(i) { await putSettings(Object.assign({}, S.settings, { tipologie: S.settings.tipologie.filter((_, k) => k !== +i) })); render(); },
+  async 'tip-add'() { const v = $('#new-tip').value.trim().replace(/\|/g, '/'); if (!v || S.settings.tipologie.includes(v)) return; await putSettings(Object.assign({}, S.settings, { tipologie: S.settings.tipologie.concat([v]) })); render(); },
+  'exp-backup'(arg) { return exportBackup(arg === '1'); },
+  'exp-csv'(kind) {
+    const years = Core.yearsPresent(S.atti, S.closings, curYm().slice(0, 4));
+    const map = { atti: () => Core.csvAtti(S.atti, S.settings), oggetti: () => Core.csvOggetti(S.atti), mensile: () => Core.csvMensile(S.atti, S.settings, S.closings, years), annuale: () => Core.csvAnnuale(S.atti, S.settings, S.closings, years) };
+    const names = { atti: 'atti', oggetti: 'oggetti', mensile: 'riepiloghi-mensili', annuale: 'riepiloghi-annuali' };
+    return saveFile(`${names[kind]}-${stamp()}.csv`, map[kind](), 'text/csv;charset=utf-8');
+  },
+  'exp-report'(arg) { const [k, key] = arg.split('|'); return saveFile(`report-${k === 'm' ? key : 'anno-' + key}.html`, reportDoc(k, key), 'text/html;charset=utf-8'); },
+  print() { window.print(); }
+};
+
+/* ===================== EVENTI ===================== */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-act]');
+  if (!t || t.disabled) return;
+  const fn = A[t.dataset.act];
+  if (!fn) return;
+  e.preventDefault();
+  try { await fn(t.dataset.arg, t, e); } catch (err) { console.error(err); toast('Errore: ' + (err.message || err), 5000); }
+});
+function onField(e) {
+  const el = e.target;
+  if (el.dataset.bind && S.draft) {
+    setPath(S.draft, el.dataset.bind, el.value); S.draft.dirty = true;
+    if (/valmax|prezzo|date/i.test(el.dataset.bind)) updateSummary();
+    return;
+  }
+  if (el.dataset.filter) { if (S.filters[el.dataset.filter] === el.value) return; S.filters[el.dataset.filter] = el.value; const l = $('#alist'); if (l) l.innerHTML = archiveListHtml(); return; }
+  if (el.hasAttribute('data-coefprev')) {
+    const g = Core.toCents($('#cs-gross').value), n = Core.toCents($('#cs-net').value), p = $('#cs-prev');
+    if (g == null || n == null) { p.textContent = ''; return; }
+    const r = Core.coefFromPair(g, n);
+    p.textContent = r.ok ? `Coefficiente netto ${Core.fmtNum(r.ratio, 4, true)} (${Core.fmtPct(r.pct)}). Trattenuta osservata ${Core.fmtPct(r.trattenuta)}.` : r.error;
+  }
+}
+document.addEventListener('input', onField);
+document.addEventListener('change', async e => {
+  const el = e.target;
+  if (el.dataset.file) {
+    const files = [...(el.files || [])]; el.value = '';
+    if (!files.length) return;
+    try {
+      if (el.dataset.file === 'restore') return await restoreFromFile(files[0]);
+      toast(files.length > 1 ? `Elaboro ${files.length} foto…` : 'Elaboro la foto…', 8000);
+      const recs = [];
+      for (const f of files) recs.push(await compressImage(f));
+      if (el.dataset.file === 'photo-form' && S.draft) {
+        for (const r of recs) S.draft.photos.add.push({ key: uid(), rec: r, url: await makeSrc(r.buf, r.type) });
+        S.draft.dirty = true; $('#fthumbs').innerHTML = formThumbsHtml(); toast(recs.length > 1 ? `${recs.length} foto aggiunte` : 'Foto aggiunta');
+      } else if (el.dataset.file === 'photo-detail' && S.view === 'detail') {
+        const id = S.arg, a = S.atti.find(x => x.id === id), t = nowIso();
+        const adds = recs.map((r, i) => ({ id: uid(), attoId: id, type: r.type, buf: r.buf, w: r.w, h: r.h, createdAt: new Date(Date.now() + i).toISOString() }));
+        const rec = Object.assign({}, a, { updatedAt: t, history: (a.history || []).concat([{ at: t, kind: 'foto', changes: [{ campo: `Foto aggiunte: ${adds.length}`, da: null, a: null }] }]) });
+        const settings = Object.assign({}, S.settings, { dataChangedAt: t });
+        await IDB.run(['atti', 'photos', 'kv'], tx => { for (const p of adds) tx.objectStore('photos').put(p); tx.objectStore('atti').put(rec); tx.objectStore('kv').put(settings, 'settings'); });
+        S.settings = settings; S.atti[S.atti.findIndex(x => x.id === id)] = rec;
+        toast(adds.length > 1 ? `${adds.length} foto salvate` : 'Foto salvata'); render();
+      }
+    } catch (err) { console.error(err); toast('Errore con il file: ' + (err.message || err), 5000); }
+    return;
+  }
+  onField(e);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'onb-num') A['onb-start']();
+});
+
+/* ===================== AVVIO ===================== */
+async function init() {
+  if (!ENV.viewer) {
+    const add = (rel, href) => { const l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l); };
+    add('manifest', 'manifest.webmanifest'); add('apple-touch-icon', 'icon-180.png'); add('icon', 'icon-192.png');
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+  try { await IDB.open(); await loadAll(); }
+  catch (e) { $('#app').innerHTML = `<main class="wrap"><div class="err-box" style="margin-top:30vh">Impossibile aprire l’archivio: ${esc(e.message || e)}</div></main>`; return; }
+  S.rYm = curYm(); S.rYear = +S.rYm.slice(0, 4);
+  render();
+  try { if (navigator.storage && navigator.storage.persist) { S.persisted = await navigator.storage.persisted(); if (!S.persisted) S.persisted = await navigator.storage.persist(); } } catch (_) {}
+  getDownloads();
+}
+init();
+</script>
+</body>
+</html>
